@@ -328,213 +328,204 @@ function Home() {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      padding: '2rem',
-      backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5', // Darker background
+    <div className="app-container" style={{
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
       color: isDarkMode ? '#ffffff' : '#000000',
+      overflow: 'hidden',
     }}>
-      {/* Logo in top left */}
-      <div style={{
-        position: 'absolute',
-        top: '1rem',
-        left: '2rem',
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        color: isDarkMode ? '#ffffff' : '#000000',
+      <header style={{
+        padding: '0.5rem 1rem',
+        backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+        borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
       }}>
-        TheCompTIABible
-      </div>
+        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>TheCompTIABible</h1>
+      </header>
 
-      {/* Main Content Layout */}
-      <div style={{
+      <nav style={{
+        backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+        padding: '0.5rem 1rem',
+        color: '#ffffff',
+      }}>
+        <div>Navigation</div>
+      </nav>
+
+      <main style={{
         display: 'flex',
-        gap: '2rem',
-        marginTop: '4rem',
-        height: '80vh',
+        flex: 1,
+        width: '100%',
+        overflow: 'hidden', // Add scroll to individual sections if needed
       }}>
-        {/* Left Side - Dashboard */}
-        <div style={{
-          flex: '2',
-          padding: '2rem',
-          border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
-          borderRadius: '8px',
-          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa', // Medium gray
-          height: '100%',
-          minHeight: '800px',
+        <aside style={{
+          width: '250px',
+          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
+          borderRight: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
           overflow: 'auto',
-          color: isDarkMode ? '#ffffff' : '#000000',
+          padding: '1rem',
         }}>
-          <h2 style={{ 
-            marginBottom: '2rem', 
-            textAlign: 'center',
-            color: isDarkMode ? '#ffffff' : '#000000',
-          }}>
-            Dashboard
-          </h2>
-          
-          {/* Generator Boxes Container */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '2rem',
-            padding: '1rem',
-            marginBottom: '2rem',
-          }}>
-            {/* Single Question Generator Box */}
-            <div style={{
-              padding: '2rem',
-              border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-              borderRadius: '8px',
-              backgroundColor: isDarkMode ? '#363636' : 'white', // Lighter gray for inner boxes
-              textAlign: 'center',
-            }}>
-              <h3 style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Single Question Generator
-              </h3>
-              <div style={{ marginBottom: '1rem' }}>
-                <select 
-                  value={selectedExam}
-                  onChange={handleExamChange}
-                  style={{
-                    padding: '0.5rem',
-                    marginRight: '1rem',
-                    borderRadius: '4px',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
-                    color: isDarkMode ? '#ffffff' : '#000000',
-                  }}
-                >
-                  {Object.entries(examOptions).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
-                <select 
-                  value={selectedDomain}
-                  onChange={handleDomainChange}
-                  style={{
-                    padding: '0.5rem',
-                    borderRadius: '4px',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
-                    color: isDarkMode ? '#ffffff' : '#000000',
-                  }}
-                >
-                  {domainOptions[selectedExam].map(domain => (
-                    <option key={domain} value={domain}>Domain {domain}</option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={generateSingleQuestion}
-                disabled={loading}
+          <section className="question-generator">
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Single Question Generator</h2>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <select 
+                value={selectedExam}
+                onChange={handleExamChange}
                 style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: 'none',
-                  backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
-                  color: '#ffffff',
-                  cursor: loading ? 'wait' : 'pointer',
-                  opacity: loading ? 0.7 : 1,
+                  width: '100%',
+                  marginBottom: '0.5rem',
+                  padding: '0.25rem',
+                  borderRadius: '3px',
+                  border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                  backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                  color: isDarkMode ? '#ffffff' : '#000000',
                 }}
               >
-                Generate Question
-              </button>
-              {loading && <p>Generating question...</p>}
-            </div>
-
-            {/* Practice Exam Generator Box */}
-            <div style={{
-              padding: '2rem',
-              border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-              borderRadius: '8px',
-              backgroundColor: isDarkMode ? '#363636' : 'white', // Lighter gray for inner boxes
-              textAlign: 'center',
-            }}>
-              <h3 style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Practice Exam Generator
-              </h3>
-              <div style={{ marginBottom: '1rem' }}>
-                <select 
-                  value={selectedExam}
-                  onChange={handleExamChange}
-                  style={{
-                    padding: '0.5rem',
-                    marginRight: '1rem',
-                    borderRadius: '4px',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
-                    color: isDarkMode ? '#ffffff' : '#000000',
-                  }}
-                >
-                  {Object.entries(examOptions).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
-                <select 
-                  value={practiceExamQuestionCount}
-                  onChange={(e) => setPracticeExamQuestionCount(e.target.value)}
-                  style={{
-                    padding: '0.5rem',
-                    borderRadius: '4px',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
-                    color: isDarkMode ? '#ffffff' : '#000000',
-                  }}
-                >
-                  {questionCountOptions.map(count => (
-                    <option key={count} value={count}>{count} Questions</option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={handlePracticeExamGenerate}
-                disabled={loading}
+                {Object.entries(examOptions).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+              <select 
+                value={selectedDomain}
+                onChange={handleDomainChange}
                 style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: 'none',
-                  backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
-                  color: '#ffffff',
-                  cursor: loading ? 'wait' : 'pointer',
-                  opacity: loading ? 0.7 : 1,
+                  width: '100%',
+                  padding: '0.25rem',
+                  borderRadius: '3px',
+                  border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                  backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                  color: isDarkMode ? '#ffffff' : '#000000',
                 }}
               >
-                Start Practice Exam
-              </button>
-              {loading && <p>Generating exam questions...</p>}
+                {domainOptions[selectedExam].map(domain => (
+                  <option key={domain} value={domain}>Domain {domain}</option>
+                ))}
+              </select>
             </div>
-          </div>
+            <button
+              onClick={generateSingleQuestion}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: loading ? 'wait' : 'pointer',
+                fontSize: '0.9rem',
+              }}
+            >
+              Generate Question
+            </button>
+          </section>
 
-          {/* Display generated questions */}
-          <QuestionDisplay questions={questions} />
-        </div>
+          <section className="practice-exam" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` }}>
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Practice Exam Generator</h2>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <select 
+                value={selectedExam}
+                onChange={handleExamChange}
+                style={{
+                  width: '100%',
+                  marginBottom: '0.5rem',
+                  padding: '0.25rem',
+                  borderRadius: '3px',
+                  border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                  backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                  color: isDarkMode ? '#ffffff' : '#000000',
+                }}
+              >
+                {Object.entries(examOptions).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+              <select 
+                value={practiceExamQuestionCount}
+                onChange={(e) => setPracticeExamQuestionCount(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.25rem',
+                  borderRadius: '3px',
+                  border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                  backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                  color: isDarkMode ? '#ffffff' : '#000000',
+                }}
+              >
+                {questionCountOptions.map(count => (
+                  <option key={count} value={count}>{count} Questions</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handlePracticeExamGenerate}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: loading ? 'wait' : 'pointer',
+                fontSize: '0.9rem',
+              }}
+            >
+              Start Practice Exam
+            </button>
+          </section>
+        </aside>
 
-        {/* Right Side - Resources */}
-        <div style={{
-          flex: '1',
-          padding: '2rem',
-          border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
-          borderRadius: '8px',
-          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa', // Medium gray
-          height: '100%',
-          color: isDarkMode ? '#ffffff' : '#000000',
+        <section className="content-area" style={{
+          flex: 1,
+          backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+          overflow: 'auto',
+          padding: '1rem',
         }}>
-          <h2 style={{ 
-            marginBottom: '2rem', 
-            textAlign: 'center',
-            color: isDarkMode ? '#ffffff' : '#000000',
-          }}>
-            Resources
-          </h2>
+          {!questions ? (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              color: isDarkMode ? '#666' : '#999'
+            }}>
+              Generate a question to begin
+            </div>
+          ) : (
+            <article className="question-display">
+              <QuestionDisplay questions={questions} />
+            </article>
+          )}
+        </section>
+
+        <aside style={{
+          width: '250px',
+          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
+          borderLeft: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          overflow: 'auto',
+          padding: '1rem',
+        }}>
+          <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>Resources</h2>
           <p style={{ 
-            textAlign: 'center', 
-            color: isDarkMode ? '#cccccc' : '#666' 
+            color: isDarkMode ? '#cccccc' : '#666666',
+            fontSize: '0.9rem',
+            margin: 0,
+            lineHeight: '1.5'
           }}>
             Useful CompTIA study resources and links will be added here soon.
           </p>
-        </div>
-      </div>
+        </aside>
+      </main>
+
+      <footer style={{
+        padding: '0.5rem',
+        backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+        borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+        textAlign: 'center',
+      }}>
+        <p style={{ margin: 0, fontSize: '0.8rem' }}>© 2024 TheCompTIABible. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
