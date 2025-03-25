@@ -7,6 +7,7 @@ function Home() {
   const [selectedDomain, setSelectedDomain] = useState('1.1');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
+  const [practiceExamQuestionCount, setPracticeExamQuestionCount] = useState('30');
   const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod';
 
   const examOptions = {
@@ -35,6 +36,8 @@ function Home() {
                '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', '4.8', '4.9',
                '5.1', '5.2', '5.3', '5.4', '5.5', '5.6']
   };
+
+  const questionCountOptions = ['5', '15', '30', '60', '90'];
 
   const handleExamChange = (e) => {
     const newExam = e.target.value;
@@ -125,6 +128,44 @@ function Home() {
         alert(`Failed to generate question: ${error.message}`);
       }
       setQuestions(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePracticeExamGenerate = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        exam: selectedExam,
+        count: practiceExamQuestionCount
+      };
+      const queryString = new URLSearchParams(params).toString();
+      const response = await fetch(`${API_BASE_URL}?${queryString}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+        credentials: 'omit'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // For now, we'll just console.log the questions
+      // Later we'll implement navigation to the exam page with these questions
+      console.log('Practice exam questions:', data);
+      
+      // TODO: Navigate to exam page with questions
+      
+    } catch (error) {
+      console.error('Error generating practice exam:', error);
+      alert('Failed to generate practice exam questions');
     } finally {
       setLoading(false);
     }
@@ -372,15 +413,55 @@ function Home() {
               borderRadius: '8px',
               backgroundColor: 'white',
               textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease-in-out',
-            }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
-              onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-            >
+            }}>
               <h3>Practice Exam Generator</h3>
-              <p>Generate full practice exams</p>
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>Coming soon...</p>
+              <div style={{ marginBottom: '1rem' }}>
+                <select 
+                  value={selectedExam}
+                  onChange={handleExamChange}
+                  style={{
+                    padding: '0.5rem',
+                    marginRight: '1rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    width: '150px'
+                  }}
+                >
+                  {Object.entries(examOptions).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+                <select 
+                  value={practiceExamQuestionCount}
+                  onChange={(e) => setPracticeExamQuestionCount(e.target.value)}
+                  style={{
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    width: '100px'
+                  }}
+                >
+                  {questionCountOptions.map(count => (
+                    <option key={count} value={count}>{count} Questions</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={handlePracticeExamGenerate}
+                disabled={loading}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  border: 'none',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  cursor: loading ? 'wait' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                Start Practice Exam
+              </button>
+              {loading && <p>Generating exam questions...</p>}
             </div>
           </div>
 
