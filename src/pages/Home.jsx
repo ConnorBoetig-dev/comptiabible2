@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -16,6 +16,9 @@ function Home() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [practiceExamQuestionCount, setPracticeExamQuestionCount] = useState('30');
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod';
 
   const examOptions = {
@@ -337,6 +340,187 @@ function Home() {
     );
   };
 
+  const AIChatSection = ({ currentQuestion }) => {
+    const inputRef = useRef(null);
+    
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!chatMessage.trim()) return;
+      
+      setIsChatLoading(true);
+      const userMessage = chatMessage;
+      setChatMessage('');
+      setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+      
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content: `You are a CompTIA exam tutor. The current question is: ${currentQuestion['question-text']}. 
+                         The correct answer is ${currentQuestion['correct answer']}: ${currentQuestion[`option-${currentQuestion['correct answer'].toLowerCase()}`]}.
+                         The explanation is: ${currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`]}`
+              },
+              ...chatHistory.map(msg => ({
+                role: msg.role,
+                content: msg.content
+              })),
+              {
+                role: "user",
+                content: userMessage
+              }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        setChatHistory(prev => [...prev, { 
+          role: 'assistant', 
+          content: data.choices[0].message.content 
+        }]);
+      } catch (error) {
+        console.error('Chat error:', error);
+        setChatHistory(prev => [...prev, { 
+          role: 'assistant', 
+          content: 'Sorry, I encountered an error. Please try again.' 
+        }]);
+      } finally {
+        setIsChatLoading(false);
+        // Focus on input after submitting
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 0);
+      }
+    };
+
+    const handleInputChange = (e) => {
+      setChatMessage(e.target.value);
+      // Ensure focus stays on the input
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+    
+    // Re-focus the input whenever chatMessage changes
+    useEffect(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [chatMessage]);
+
+    return (
+      <div className="chat-section">
+        <h4>Need further clarification? Ask AI!</h4>
+        
+        <div className="chat-messages">
+          {chatHistory.map((msg, idx) => (
+            <div key={idx} className={`chat-message ${msg.role}`}>
+              <strong>{msg.role === 'user' ? 'You: ' : 'AI: '}</strong>
+              {msg.content}
+            </div>
+          ))}
+          {isChatLoading && <div className="chat-loading">AI is thinking...</div>}
+        </div>
+
+        <form onSubmit={handleSubmit} className="chat-form">
+          <input
+            ref={inputRef}
+            type="text"
+            value={chatMessage}
+            onChange={handleInputChange}
+            placeholder="Type your question here..."
+            className="chat-input"
+            autoComplete="off"
+          />
+          <button 
+            type="submit" 
+            disabled={isChatLoading || !chatMessage.trim()}
+            className="chat-submit"
+          >
+            Send
+          </button>
+        </form>
+
+        <style>
+          {`
+            .chat-section {
+              margin-top: 2rem;
+              padding: 1rem;
+              border: 1px solid ${isDarkMode ? '#404040' : '#ddd'};
+              border-radius: 8px;
+              background-color: ${isDarkMode ? '#2d2d2d' : 'white'};
+              color: ${isDarkMode ? '#ffffff' : '#000000'};
+            }
+
+            .chat-messages {
+              max-height: 200px;
+              overflow-y: auto;
+              margin-bottom: 1rem;
+              padding: 0.5rem;
+            }
+
+            .chat-message {
+              margin-bottom: 0.5rem;
+              padding: 0.5rem;
+              border-radius: 4px;
+            }
+
+            .chat-message.user {
+              background-color: ${isDarkMode ? '#363636' : '#f5f5f5'};
+            }
+
+            .chat-loading {
+              font-style: italic;
+              color: ${isDarkMode ? '#999' : '#666'};
+            }
+
+            .chat-form {
+              display: flex;
+              gap: 0.5rem;
+            }
+
+            .chat-input {
+              flex: 1;
+              padding: 0.5rem;
+              border-radius: 4px;
+              border: 1px solid ${isDarkMode ? '#404040' : '#ddd'};
+              background-color: ${isDarkMode ? '#363636' : 'white'};
+              color: ${isDarkMode ? '#ffffff' : '#000000'};
+            }
+
+            .chat-input:focus {
+              outline: none;
+              border-color: ${isDarkMode ? '#0066cc' : '#007bff'};
+            }
+
+            .chat-submit {
+              padding: 0.5rem 1rem;
+              border-radius: 4px;
+              border: none;
+              background-color: ${isDarkMode ? '#0066cc' : '#007bff'};
+              color: #ffffff;
+              cursor: pointer;
+            }
+
+            .chat-submit:disabled {
+              opacity: 0.7;
+              cursor: not-allowed;
+            }
+          `}
+        </style>
+      </div>
+    );
+  };
+
   return (
     <div className="app-container" style={{
       height: '100vh',
@@ -512,6 +696,7 @@ function Home() {
           ) : (
             <article className="question-display">
               <QuestionDisplay questions={questions} />
+              {questions && <AIChatSection currentQuestion={questions[0]} />}
             </article>
           )}
         </section>
