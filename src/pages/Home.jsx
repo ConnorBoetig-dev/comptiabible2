@@ -178,7 +178,7 @@ function Home() {
             borderRadius: '4px'
           }}>
             <p style={{ fontWeight: 'bold', textAlign: 'left' }}>
-              {index + 1}. {q['question-text']}
+              {q['question-text']}
             </p>
             <div style={{ textAlign: 'left', marginLeft: '1rem' }}>
               {['option-a', 'option-b', 'option-c', 'option-d'].map((option, idx) => (
@@ -202,7 +202,7 @@ function Home() {
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: '1rem' }}>
+            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
               <button
                 onClick={checkAnswer}
                 disabled={!selectedAnswer}
@@ -218,27 +218,42 @@ function Home() {
               >
                 Check Answer
               </button>
-              {isAnswerChecked && selectedAnswer && (
-                <div style={{
-                  marginTop: '1rem',
-                  padding: '0.5rem',
+              <button
+                onClick={generateSingleQuestion}
+                disabled={loading}
+                style={{
+                  padding: '0.5rem 1rem',
                   borderRadius: '4px',
-                  backgroundColor: isCorrect ? '#d4edda' : '#f8d7da',
-                  color: isCorrect ? '#155724' : '#721c24',
-                }}>
-                  <div style={{ fontWeight: 'bold' }}>
-                    {isCorrect ? 'Correct!' : 'Incorrect'}
-                  </div>
-                  <div style={{ 
-                    marginTop: '0.5rem',
-                    color: '#333',
-                    fontSize: '0.9rem'
-                  }}>
-                    {selectedExplanation}
-                  </div>
-                </div>
-              )}
+                  border: 'none',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  cursor: loading ? 'wait' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                Next
+              </button>
             </div>
+            {isAnswerChecked && selectedAnswer && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '0.5rem',
+                borderRadius: '4px',
+                backgroundColor: isCorrect ? '#d4edda' : '#f8d7da',
+                color: isCorrect ? '#155724' : '#721c24',
+              }}>
+                <div style={{ fontWeight: 'bold' }}>
+                  {isCorrect ? 'Correct!' : 'Incorrect'}
+                </div>
+                <div style={{ 
+                  marginTop: '0.5rem',
+                  color: '#333',
+                  fontSize: '0.9rem'
+                }}>
+                  {selectedExplanation}
+                </div>
+              </div>
+            )}
             <p style={{ 
               marginTop: '1rem', 
               color: '#666', 

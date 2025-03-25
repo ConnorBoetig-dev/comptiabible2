@@ -1,0 +1,84 @@
+import json
+import random
+import boto3
+from decimal import Decimal
+
+dynamodb = boto3.resource('dynamodb')
+
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
+def lambda_handler(event, context):
+    """
+    Supports both:
+    - Console test event (raw dict)
+    - API Gateway GET request with queryStringParameters
+    """
+    
+    # CORS headers
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",  # Allow all origins
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "OPTIONS,GET"
+    }
+
+    # Handle OPTIONS request for CORS preflight
+    if event.get("httpMethod") == "OPTIONS":
+        return {
+            "statusCode": 200,
+            "headers": headers,
+            "body": ""
+        }
+
+    # 1) Detect if this is a test event or API Gateway GET request
+    if "queryStringParameters" in event:
+        body = event["queryStringParameters"] or {}
+    else:
+        body = event
+
+    mode = body.get("mode", "generator1")
+    exam_name = body.get("exam", "A1101")
+    count = int(body.get("count", 1))
+    filter_domain = body.get("domain")
+    filter_difficulty = body.get("difficulty")
+
+    try:
+        table = dynamodb.Table(exam_name)
+        response = table.scan()
+        items = response.get('Items', [])
+
+        # Strict domain filtering (exact match only)
+        if filter_domain:
+            items = [
+                q for q in items 
+                if str(q.get("domain", "")).strip() == str(filter_domain).strip()
+            ]
+
+        # Difficulty filtering
+        if filter_difficulty:
+            items = [
+                q for q in items
+                if str(q.get("difficulty", "")).lower() == str(filter_difficulty).lower()
+            ]
+
+        # Shuffle & limit
+        random.shuffle(items)
+        selected = items[:count]
+
+        return {
+            "statusCode": 200,
+            "headers": headers,
+            "body": json.dumps(selected, default=decimal_default)
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": headers,
+            "body": json.dumps({
+                "error": str(e)
+            })
+        }
