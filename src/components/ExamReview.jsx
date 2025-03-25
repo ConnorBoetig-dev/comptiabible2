@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function ExamReview({ examResults, isDarkMode }) {
   const [showQuestions, setShowQuestions] = useState(false);
+  const navigate = useNavigate();
 
   if (!examResults) return null;
 
   const { score, questions, answers } = examResults;
+
+  const handleHomeClick = () => {
+    navigate('/', { state: { examResults: null } });
+  };
 
   return (
     <div style={{
@@ -160,6 +166,29 @@ function ExamReview({ examResults, isDarkMode }) {
               </div>
             );
           })}
+          {/* Add Home button at the bottom */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '2rem',
+            marginBottom: '1rem',
+          }}>
+            <button
+              onClick={handleHomeClick}
+              style={{
+                padding: '1rem 2rem',
+                fontSize: '1.1rem',
+                backgroundColor: isDarkMode ? '#0066cc' : '#2196f3',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+            >
+              Return Home
+            </button>
+          </div>
         </div>
       )}
     </div>

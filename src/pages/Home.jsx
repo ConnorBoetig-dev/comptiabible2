@@ -62,6 +62,9 @@ function Home() {
       setLoading(true);
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
+      // Clear exam results when generating new question
+      navigate('/', { state: { examResults: null } });
+      
       const params = {
         exam: selectedExam,
         domain: selectedDomain,
@@ -144,6 +147,9 @@ function Home() {
   const handlePracticeExamGenerate = async () => {
     try {
       setLoading(true);
+      // Clear exam results when starting new practice exam
+      navigate('/', { state: { examResults: null } });
+      
       const params = {
         exam: selectedExam,
         count: practiceExamQuestionCount
