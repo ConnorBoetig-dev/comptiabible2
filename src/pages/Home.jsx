@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 function Home() {
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState(null);
@@ -309,7 +311,12 @@ function Home() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', padding: '2rem' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      padding: '2rem',
+      backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5', // Darker background
+      color: isDarkMode ? '#ffffff' : '#000000',
+    }}>
       {/* Logo in top left */}
       <div style={{
         position: 'absolute',
@@ -317,6 +324,7 @@ function Home() {
         left: '2rem',
         fontSize: '1.5rem',
         fontWeight: 'bold',
+        color: isDarkMode ? '#ffffff' : '#000000',
       }}>
         TheCompTIABible
       </div>
@@ -326,20 +334,27 @@ function Home() {
         display: 'flex',
         gap: '2rem',
         marginTop: '4rem',
-        height: '80vh', // Set fixed height
+        height: '80vh',
       }}>
         {/* Left Side - Dashboard */}
         <div style={{
           flex: '2',
           padding: '2rem',
-          border: '1px solid #ccc',
+          border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
           borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
-          height: '100%', // Fill parent height
-          minHeight: '800px', // Add minimum height to maintain expanded size
-          overflow: 'auto', // Add scroll if content overflows
+          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa', // Medium gray
+          height: '100%',
+          minHeight: '800px',
+          overflow: 'auto',
+          color: isDarkMode ? '#ffffff' : '#000000',
         }}>
-          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Dashboard</h2>
+          <h2 style={{ 
+            marginBottom: '2rem', 
+            textAlign: 'center',
+            color: isDarkMode ? '#ffffff' : '#000000',
+          }}>
+            Dashboard
+          </h2>
           
           {/* Generator Boxes Container */}
           <div style={{
@@ -347,17 +362,19 @@ function Home() {
             gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '2rem',
             padding: '1rem',
-            marginBottom: '2rem', // Add space between boxes and questions
+            marginBottom: '2rem',
           }}>
             {/* Single Question Generator Box */}
             <div style={{
               padding: '2rem',
-              border: '1px solid #ddd',
+              border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
               borderRadius: '8px',
-              backgroundColor: 'white',
+              backgroundColor: isDarkMode ? '#363636' : 'white', // Lighter gray for inner boxes
               textAlign: 'center',
             }}>
-              <h3>Single Question Generator</h3>
+              <h3 style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
+                Single Question Generator
+              </h3>
               <div style={{ marginBottom: '1rem' }}>
                 <select 
                   value={selectedExam}
@@ -366,7 +383,9 @@ function Home() {
                     padding: '0.5rem',
                     marginRight: '1rem',
                     borderRadius: '4px',
-                    border: '1px solid #ddd'
+                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                    color: isDarkMode ? '#ffffff' : '#000000',
                   }}
                 >
                   {Object.entries(examOptions).map(([value, label]) => (
@@ -379,7 +398,9 @@ function Home() {
                   style={{
                     padding: '0.5rem',
                     borderRadius: '4px',
-                    border: '1px solid #ddd'
+                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                    color: isDarkMode ? '#ffffff' : '#000000',
                   }}
                 >
                   {domainOptions[selectedExam].map(domain => (
@@ -394,8 +415,8 @@ function Home() {
                   padding: '0.5rem 1rem',
                   borderRadius: '4px',
                   border: 'none',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                  color: '#ffffff',
                   cursor: loading ? 'wait' : 'pointer',
                   opacity: loading ? 0.7 : 1,
                 }}
@@ -408,12 +429,14 @@ function Home() {
             {/* Practice Exam Generator Box */}
             <div style={{
               padding: '2rem',
-              border: '1px solid #ddd',
+              border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
               borderRadius: '8px',
-              backgroundColor: 'white',
+              backgroundColor: isDarkMode ? '#363636' : 'white', // Lighter gray for inner boxes
               textAlign: 'center',
             }}>
-              <h3>Practice Exam Generator</h3>
+              <h3 style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
+                Practice Exam Generator
+              </h3>
               <div style={{ marginBottom: '1rem' }}>
                 <select 
                   value={selectedExam}
@@ -422,8 +445,9 @@ function Home() {
                     padding: '0.5rem',
                     marginRight: '1rem',
                     borderRadius: '4px',
-                    border: '1px solid #ddd',
-                    width: '150px'
+                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                    color: isDarkMode ? '#ffffff' : '#000000',
                   }}
                 >
                   {Object.entries(examOptions).map(([value, label]) => (
@@ -436,8 +460,9 @@ function Home() {
                   style={{
                     padding: '0.5rem',
                     borderRadius: '4px',
-                    border: '1px solid #ddd',
-                    width: '100px'
+                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                    color: isDarkMode ? '#ffffff' : '#000000',
                   }}
                 >
                   {questionCountOptions.map(count => (
@@ -452,8 +477,8 @@ function Home() {
                   padding: '0.5rem 1rem',
                   borderRadius: '4px',
                   border: 'none',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                  color: '#ffffff',
                   cursor: loading ? 'wait' : 'pointer',
                   opacity: loading ? 0.7 : 1,
                 }}
@@ -472,13 +497,23 @@ function Home() {
         <div style={{
           flex: '1',
           padding: '2rem',
-          border: '1px solid #ccc',
+          border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
           borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
-          height: '100%', // Fill parent height
+          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa', // Medium gray
+          height: '100%',
+          color: isDarkMode ? '#ffffff' : '#000000',
         }}>
-          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Resources</h2>
-          <p style={{ textAlign: 'center', color: '#666' }}>
+          <h2 style={{ 
+            marginBottom: '2rem', 
+            textAlign: 'center',
+            color: isDarkMode ? '#ffffff' : '#000000',
+          }}>
+            Resources
+          </h2>
+          <p style={{ 
+            textAlign: 'center', 
+            color: isDarkMode ? '#cccccc' : '#666' 
+          }}>
             Useful CompTIA study resources and links will be added here soon.
           </p>
         </div>

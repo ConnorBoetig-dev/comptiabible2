@@ -1,7 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 function Exam() {
+  const { isDarkMode } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -46,7 +48,8 @@ function Exam() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
+      color: isDarkMode ? '#ffffff' : '#000000',
       overflow: 'auto'
     }}>
       <div style={{
@@ -64,6 +67,7 @@ function Exam() {
           display: 'flex',
           justifyContent: 'space-between',
           fontSize: '1.2rem',
+          color: isDarkMode ? '#ffffff' : '#000000',
         }}>
           <div>Question {currentQuestionIndex + 1} of {questions.length}</div>
           <div>Time Remaining: {timeRemaining || 'Not started'}</div>
@@ -74,15 +78,18 @@ function Exam() {
           width: '100%',
           maxWidth: '1000px',
           padding: '3rem',
-          backgroundColor: 'white',
+          backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+          color: isDarkMode ? '#ffffff' : '#000000',
           borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          fontSize: '1.1rem',
+          boxShadow: isDarkMode 
+            ? '0 4px 6px rgba(0,0,0,0.4)' 
+            : '0 2px 4px rgba(0,0,0,0.1)',
         }}>
           <p style={{ 
             fontWeight: 'bold', 
             marginBottom: '2rem',
             fontSize: '1.3rem',
+            color: isDarkMode ? '#ffffff' : '#000000',
           }}>
             {currentQuestion['question-text']}
           </p>
@@ -99,16 +106,17 @@ function Exam() {
                 onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
                 style={{
                   padding: '1.2rem',
-                  border: '1px solid #ddd',
+                  border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                   borderRadius: '4px',
                   cursor: 'pointer',
-                  backgroundColor: selectedAnswers[currentQuestionIndex] === getAnswerLetter(idx) 
-                    ? '#e3f2fd' 
-                    : 'white',
+                  backgroundColor: selectedAnswers[currentQuestionIndex] === getAnswerLetter(idx)
+                    ? isDarkMode ? '#363636' : '#e3f2fd'
+                    : isDarkMode ? '#2d2d2d' : 'white',
+                  color: isDarkMode ? '#ffffff' : '#000000',
                   fontSize: '1.1rem',
                   transition: 'background-color 0.2s ease',
                   ':hover': {
-                    backgroundColor: '#f5f5f5'
+                    backgroundColor: isDarkMode ? '#404040' : '#f5f5f5'
                   }
                 }}
               >
@@ -131,8 +139,8 @@ function Exam() {
               padding: '0.8rem 1.5rem',
               borderRadius: '4px',
               border: 'none',
-              backgroundColor: '#007bff',
-              color: 'white',
+              backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+              color: '#ffffff',
               cursor: currentQuestionIndex === 0 ? 'not-allowed' : 'pointer',
               opacity: currentQuestionIndex === 0 ? 0.7 : 1,
               fontSize: '1.1rem',
@@ -147,8 +155,8 @@ function Exam() {
               padding: '0.8rem 1.5rem',
               borderRadius: '4px',
               border: 'none',
-              backgroundColor: '#007bff',
-              color: 'white',
+              backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+              color: '#ffffff',
               cursor: currentQuestionIndex === questions.length - 1 ? 'not-allowed' : 'pointer',
               opacity: currentQuestionIndex === questions.length - 1 ? 0.7 : 1,
               fontSize: '1.1rem',
@@ -163,4 +171,7 @@ function Exam() {
 }
 
 export default Exam;
+
+
+
 
