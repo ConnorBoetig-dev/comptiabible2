@@ -51,6 +51,30 @@ function Exam() {
     setLoading(false);
   };
 
+  const handleExamComplete = () => {
+    const results = {
+      timestamp: new Date().toISOString(),
+      totalQuestions: questions.length,
+      answers: selectedAnswers,
+      questions: questions,
+      score: calculateScore(),
+    };
+    
+    // Save to localStorage
+    const previousExams = JSON.parse(localStorage.getItem('examResults') || '[]');
+    localStorage.setItem('examResults', JSON.stringify([...previousExams, results]));
+    
+    // Navigate back to home with results
+    navigate('/', { state: { examResults: results } });
+  };
+
+  const calculateScore = () => {
+    const correct = Object.entries(selectedAnswers).filter(([index, answer]) => {
+      return answer === questions[index]['correct answer'];
+    }).length;
+    return (correct / questions.length) * 100;
+  };
+
   return (
     <div style={{ 
       minHeight: '100vh',
@@ -169,22 +193,40 @@ function Exam() {
           >
             Previous
           </button>
-          <button
-            onClick={() => handleNavigation('next')}
-            disabled={currentQuestionIndex === questions.length - 1 || loading}
-            style={{
-              padding: '0.8rem 1.5rem',
-              borderRadius: '4px',
-              border: 'none',
-              backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
-              color: '#ffffff',
-              cursor: currentQuestionIndex === questions.length - 1 || loading ? 'not-allowed' : 'pointer',
-              opacity: (currentQuestionIndex === questions.length - 1 || loading) ? 0.7 : 1,
-              fontSize: '1.1rem',
-            }}
-          >
-            Next
-          </button>
+          
+          {currentQuestionIndex === questions.length - 1 ? (
+            <button
+              onClick={handleExamComplete}
+              style={{
+                padding: '0.8rem 1.5rem',
+                borderRadius: '4px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#28a745' : '#2e7d32',
+                color: '#ffffff',
+                cursor: 'pointer',
+                fontSize: '1.1rem',
+              }}
+            >
+              Submit Exam
+            </button>
+          ) : (
+            <button
+              onClick={() => handleNavigation('next')}
+              disabled={currentQuestionIndex === questions.length - 1 || loading}
+              style={{
+                padding: '0.8rem 1.5rem',
+                borderRadius: '4px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: currentQuestionIndex === questions.length - 1 || loading ? 'not-allowed' : 'pointer',
+                opacity: (currentQuestionIndex === questions.length - 1 || loading) ? 0.7 : 1,
+                fontSize: '1.1rem',
+              }}
+            >
+              Next
+            </button>
+          )}
         </div>
       </div>
     </div>

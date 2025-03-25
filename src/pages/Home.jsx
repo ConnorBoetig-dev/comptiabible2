@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ExamReview from '../components/ExamReview';
 
 function Home() {
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const examResults = location.state?.examResults;
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState(null);
   const [selectedExam, setSelectedExam] = useState('A1101');
@@ -488,6 +491,8 @@ function Home() {
         }}>
           {loading ? (
             <LoadingSpinner isDarkMode={isDarkMode} />
+          ) : examResults ? (
+            <ExamReview examResults={examResults} isDarkMode={isDarkMode} />
           ) : !questions ? (
             <div style={{
               display: 'flex',
