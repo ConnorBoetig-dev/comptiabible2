@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function Home() {
   const { isDarkMode } = useTheme();
@@ -330,6 +331,9 @@ function Home() {
   return (
     <div className="app-container" style={{
       height: '100vh',
+      width: '100vw',
+      margin: 0,
+      padding: 0,
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
@@ -482,7 +486,9 @@ function Home() {
           overflow: 'auto',
           padding: '1rem',
         }}>
-          {!questions ? (
+          {loading ? (
+            <LoadingSpinner isDarkMode={isDarkMode} />
+          ) : !questions ? (
             <div style={{
               display: 'flex',
               justifyContent: 'center',

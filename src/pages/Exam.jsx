@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function Exam() {
   const { isDarkMode } = useTheme();
@@ -9,6 +10,7 @@ function Exam() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [timeRemaining, setTimeRemaining] = useState(null);
+  const [loading, setLoading] = useState(false);
   
   // Get questions from navigation state
   const questions = location.state?.questions || [];
@@ -36,6 +38,18 @@ function Exam() {
   if (!currentQuestion) {
     return null;
   }
+
+  const handleNavigation = async (direction) => {
+    setLoading(true);
+    const newIndex = direction === 'next' 
+      ? Math.min(questions.length - 1, currentQuestionIndex + 1)
+      : Math.max(0, currentQuestionIndex - 1);
+    
+    setCurrentQuestionIndex(newIndex);
+    // Small delay to show loading state
+    await new Promise(resolve => setTimeout(resolve, 100));
+    setLoading(false);
+  };
 
   return (
     <div style={{ 
@@ -84,46 +98,53 @@ function Exam() {
           boxShadow: isDarkMode 
             ? '0 4px 6px rgba(0,0,0,0.4)' 
             : '0 2px 4px rgba(0,0,0,0.1)',
+          minHeight: '400px', // Add minimum height to prevent layout shift
         }}>
-          <p style={{ 
-            fontWeight: 'bold', 
-            marginBottom: '2rem',
-            fontSize: '1.3rem',
-            color: isDarkMode ? '#ffffff' : '#000000',
-          }}>
-            {currentQuestion['question-text']}
-          </p>
+          {loading ? (
+            <LoadingSpinner isDarkMode={isDarkMode} />
+          ) : (
+            <>
+              <p style={{ 
+                fontWeight: 'bold', 
+                marginBottom: '2rem',
+                fontSize: '1.3rem',
+                color: isDarkMode ? '#ffffff' : '#000000',
+              }}>
+                {currentQuestion['question-text']}
+              </p>
 
-          {/* Options */}
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '1.2rem'
-          }}>
-            {['option-a', 'option-b', 'option-c', 'option-d'].map((option, idx) => (
-              <div 
-                key={option}
-                onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
-                style={{
-                  padding: '1.2rem',
-                  border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  backgroundColor: selectedAnswers[currentQuestionIndex] === getAnswerLetter(idx)
-                    ? isDarkMode ? '#363636' : '#e3f2fd'
-                    : isDarkMode ? '#2d2d2d' : 'white',
-                  color: isDarkMode ? '#ffffff' : '#000000',
-                  fontSize: '1.1rem',
-                  transition: 'background-color 0.2s ease',
-                  ':hover': {
-                    backgroundColor: isDarkMode ? '#404040' : '#f5f5f5'
-                  }
-                }}
-              >
-                {getAnswerLetter(idx)}) {currentQuestion[option]}
+              {/* Options */}
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '1.2rem'
+              }}>
+                {['option-a', 'option-b', 'option-c', 'option-d'].map((option, idx) => (
+                  <div 
+                    key={option}
+                    onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
+                    style={{
+                      padding: '1.2rem',
+                      border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      backgroundColor: selectedAnswers[currentQuestionIndex] === getAnswerLetter(idx)
+                        ? isDarkMode ? '#363636' : '#e3f2fd'
+                        : isDarkMode ? '#2d2d2d' : 'white',
+                      color: isDarkMode ? '#ffffff' : '#000000',
+                      fontSize: '1.1rem',
+                      transition: 'background-color 0.2s ease',
+                      ':hover': {
+                        backgroundColor: isDarkMode ? '#404040' : '#f5f5f5'
+                      }
+                    }}
+                  >
+                    {getAnswerLetter(idx)}) {currentQuestion[option]}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
 
         {/* Navigation */}
@@ -133,32 +154,32 @@ function Exam() {
           gap: '1rem'
         }}>
           <button
-            onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
-            disabled={currentQuestionIndex === 0}
+            onClick={() => handleNavigation('prev')}
+            disabled={currentQuestionIndex === 0 || loading}
             style={{
               padding: '0.8rem 1.5rem',
               borderRadius: '4px',
               border: 'none',
               backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
               color: '#ffffff',
-              cursor: currentQuestionIndex === 0 ? 'not-allowed' : 'pointer',
-              opacity: currentQuestionIndex === 0 ? 0.7 : 1,
+              cursor: currentQuestionIndex === 0 || loading ? 'not-allowed' : 'pointer',
+              opacity: (currentQuestionIndex === 0 || loading) ? 0.7 : 1,
               fontSize: '1.1rem',
             }}
           >
             Previous
           </button>
           <button
-            onClick={() => setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1))}
-            disabled={currentQuestionIndex === questions.length - 1}
+            onClick={() => handleNavigation('next')}
+            disabled={currentQuestionIndex === questions.length - 1 || loading}
             style={{
               padding: '0.8rem 1.5rem',
               borderRadius: '4px',
               border: 'none',
               backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
               color: '#ffffff',
-              cursor: currentQuestionIndex === questions.length - 1 ? 'not-allowed' : 'pointer',
-              opacity: currentQuestionIndex === questions.length - 1 ? 0.7 : 1,
+              cursor: currentQuestionIndex === questions.length - 1 || loading ? 'not-allowed' : 'pointer',
+              opacity: (currentQuestionIndex === questions.length - 1 || loading) ? 0.7 : 1,
               fontSize: '1.1rem',
             }}
           >
@@ -171,6 +192,7 @@ function Exam() {
 }
 
 export default Exam;
+
 
 
 
