@@ -424,7 +424,6 @@ function Home() {
         <div className="chat-messages">
           {chatHistory.map((msg, idx) => (
             <div key={idx} className={`chat-message ${msg.role}`}>
-              <strong>{msg.role === 'user' ? 'You: ' : 'AI: '}</strong>
               {msg.content}
             </div>
           ))}
@@ -476,6 +475,11 @@ function Home() {
 
             .chat-message.user {
               background-color: ${isDarkMode ? '#363636' : '#f5f5f5'};
+              color: ${isDarkMode ? '#999999' : '#666666'}; /* Lighter color for user messages */
+            }
+
+            .chat-message.assistant {
+              color: ${isDarkMode ? '#ffffff' : '#000000'}; /* Keep AI responses bright */
             }
 
             .chat-loading {
