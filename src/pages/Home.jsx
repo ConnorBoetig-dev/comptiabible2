@@ -207,19 +207,25 @@ function Home() {
       <div style={{
         marginTop: '2rem',
         padding: '1rem',
-        border: '1px solid #ddd',
+        border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
         borderRadius: '8px',
-        backgroundColor: 'white',
+        backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+        color: isDarkMode ? '#ffffff' : '#000000',
       }}>
-        <h4>Generated Question</h4>
+        <h4 style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>Generated Question</h4>
         {questions.map((q, index) => (
           <div key={q['question-id'] || index} style={{
             marginBottom: '2rem',
             padding: '1rem',
-            border: '1px solid #eee',
-            borderRadius: '4px'
+            border: `1px solid ${isDarkMode ? '#404040' : '#eee'}`,
+            borderRadius: '4px',
+            backgroundColor: isDarkMode ? '#363636' : 'white',
           }}>
-            <p style={{ fontWeight: 'bold', textAlign: 'left' }}>
+            <p style={{ 
+              fontWeight: 'bold', 
+              textAlign: 'left',
+              color: isDarkMode ? '#ffffff' : '#000000',
+            }}>
               {q['question-text']}
             </p>
             <div style={{ textAlign: 'left', marginLeft: '1rem' }}>
@@ -231,6 +237,7 @@ function Home() {
                     display: 'flex',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    color: isDarkMode ? '#ffffff' : '#000000',
                   }}
                   onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
                 >
@@ -244,7 +251,13 @@ function Home() {
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+
+            {/* Check Answer and Next buttons container */}
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              marginTop: '1rem',
+            }}>
               <button
                 onClick={checkAnswer}
                 disabled={!selectedAnswer}
@@ -252,53 +265,57 @@ function Home() {
                   padding: '0.5rem 1rem',
                   borderRadius: '4px',
                   border: 'none',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  cursor: selectedAnswer ? 'pointer' : 'not-allowed',
-                  opacity: selectedAnswer ? 1 : 0.7,
+                  backgroundColor: isDarkMode ? '#0066cc' : '#28a745',
+                  color: '#ffffff',
+                  cursor: !selectedAnswer ? 'not-allowed' : 'pointer',
+                  opacity: !selectedAnswer ? 0.7 : 1,
                 }}
               >
                 Check Answer
               </button>
               <button
                 onClick={generateSingleQuestion}
-                disabled={loading}
                 style={{
                   padding: '0.5rem 1rem',
                   borderRadius: '4px',
                   border: 'none',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  cursor: loading ? 'wait' : 'pointer',
-                  opacity: loading ? 0.7 : 1,
+                  backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                  color: '#ffffff',
+                  cursor: 'pointer',
                 }}
               >
                 Next
               </button>
             </div>
+
             {isAnswerChecked && selectedAnswer && (
               <div style={{
                 marginTop: '1rem',
                 padding: '0.5rem',
                 borderRadius: '4px',
-                backgroundColor: isCorrect ? '#d4edda' : '#f8d7da',
-                color: isCorrect ? '#155724' : '#721c24',
+                backgroundColor: isDarkMode 
+                  ? (isCorrect ? '#1b4332' : '#442c2c')
+                  : (isCorrect ? '#d4edda' : '#f8d7da'),
+                color: isDarkMode
+                  ? '#ffffff'
+                  : (isCorrect ? '#155724' : '#721c24'),
               }}>
                 <div style={{ fontWeight: 'bold' }}>
                   {isCorrect ? 'Correct!' : 'Incorrect'}
                 </div>
                 <div style={{ 
                   marginTop: '0.5rem',
-                  color: '#333',
+                  color: isDarkMode ? '#cccccc' : '#333333',
                   fontSize: '0.9rem'
                 }}>
                   {selectedExplanation}
                 </div>
               </div>
             )}
+            
             <p style={{ 
               marginTop: '1rem', 
-              color: '#666', 
+              color: isDarkMode ? '#999999' : '#666666', 
               fontSize: '0.9rem',
               textAlign: 'left' 
             }}>
