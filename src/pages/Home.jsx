@@ -65,82 +65,75 @@ function Home() {
       setLoading(true);
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
-      // Clear exam results when generating new question
       navigate('/', { state: { examResults: null } });
-      
+      setChatHistory([]); 
+
       const params = {
         exam: selectedExam,
         domain: selectedDomain,
         count: 1
       };
       const queryString = new URLSearchParams(params).toString();
-      const response = await fetch(`${API_BASE_URL}?${queryString}`, {
+      const fullUrl = `${API_BASE_URL}?${queryString}`;
+      console.log('Fetching from URL:', fullUrl);
+
+      const response = await fetch(fullUrl, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         mode: 'cors',
-        credentials: 'omit'
       });
       
+      // Log the raw response
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers));
+
       if (!response.ok) {
-        console.error('API Response:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       console.log('API Response data:', data);
-      
-      if (!data || (Array.isArray(data) && data.length === 0)) {
-        throw new Error('No questions received from the API');
+
+      if (!Array.isArray(data)) {
+        throw new Error('Expected array response from API');
       }
 
-      const formattedData = Array.isArray(data) ? data : [data];
+      if (data.length === 0) {
+        throw new Error('No questions returned from API');
+      }
+
+      setQuestions(data);
+
+      if (!import.meta.env.VITE_OPENAI_API_KEY) {
+        throw new Error('OpenAI API key is not configured');
+      }
+
+      const question = data[0];
       
-      // Log the question format for debugging
-      console.log('Question format:', formattedData[0]);
-      
-      const isValidQuestion = (q) => {
-        const requiredFields = [
-          'question-text',
-          'correct answer', // API returns 'correct answer' instead of 'correct-answer'
-          'option-a',
-          'option-b',
-          'option-c',
-          'option-d'
-        ];
-        
-        // Add some logging to help debug
-        console.log('Checking question fields:', Object.keys(q));
-        
-        const missingFields = requiredFields.filter(field => {
-          const hasField = q[field] !== undefined;
-          if (!hasField) {
-            console.log(`Missing field: ${field}`);
-          }
-          return !hasField;
-        });
-        
-        if (missingFields.length > 0) {
-          console.error('Missing fields:', missingFields);
-          return false;
+      // Add this check
+      console.log('Question data:', {
+        text: question['question-text'],
+        optionA: question['option-a'],
+        optionB: question['option-b'],
+        optionC: question['option-c'],
+        optionD: question['option-d']
+      });
+
+      setChatHistory([
+        {
+          role: 'assistant',
+          content: "Ask me: 'How is that wrong?!' Try it!"
         }
-        return true;
-      };
+      ]);
 
-      if (!formattedData.every(isValidQuestion)) {
-        throw new Error('Invalid question format received from API');
-      }
-
-      setQuestions(formattedData);
     } catch (error) {
-      console.error('Error details:', error);
-      if (error.message.includes('CORS')) {
-        alert('Network error: CORS policy restriction. Please check API configuration.');
-      } else {
-        alert(`Failed to generate question: ${error.message}`);
-      }
+      console.error('Full error:', error);
+      alert(`Failed to fetch question: ${error.message}`);
       setQuestions(null);
     } finally {
       setLoading(false);
@@ -419,7 +412,7 @@ function Home() {
 
     return (
       <div className="chat-section">
-        <h4>Need further clarification? Ask AI!</h4>
+        <h4>Need further clarification? Ask AI.</h4>
         
         <div className="chat-messages">
           {chatHistory.map((msg, idx) => (

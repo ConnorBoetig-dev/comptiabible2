@@ -45,10 +45,14 @@ def lambda_handler(event, context):
     filter_domain = body.get("domain")
     filter_difficulty = body.get("difficulty")
 
+    print(f"Processing request with params: exam={exam_name}, domain={filter_domain}, count={count}")
+
     try:
         table = dynamodb.Table(exam_name)
         response = table.scan()
         items = response.get('Items', [])
+        
+        print(f"Found {len(items)} items in table {exam_name}")
 
         # Strict domain filtering (exact match only)
         if filter_domain:
@@ -56,6 +60,7 @@ def lambda_handler(event, context):
                 q for q in items 
                 if str(q.get("domain", "")).strip() == str(filter_domain).strip()
             ]
+            print(f"After domain filtering: {len(items)} items remain")
 
         # Difficulty filtering
         if filter_difficulty:
@@ -63,6 +68,7 @@ def lambda_handler(event, context):
                 q for q in items
                 if str(q.get("difficulty", "")).lower() == str(filter_difficulty).lower()
             ]
+            print(f"After difficulty filtering: {len(items)} items remain")
 
         # Shuffle & limit
         random.shuffle(items)
