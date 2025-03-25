@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState(null);
   const [selectedExam, setSelectedExam] = useState('A1101');
@@ -157,11 +159,8 @@ function Home() {
       
       const data = await response.json();
       
-      // For now, we'll just console.log the questions
-      // Later we'll implement navigation to the exam page with these questions
-      console.log('Practice exam questions:', data);
-      
-      // TODO: Navigate to exam page with questions
+      // Navigate to exam page with questions
+      navigate('/exam', { state: { questions: data } });
       
     } catch (error) {
       console.error('Error generating practice exam:', error);
