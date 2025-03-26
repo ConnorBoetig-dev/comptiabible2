@@ -124,10 +124,11 @@ function Home() {
         optionD: question['option-d']
       });
 
+      // Initialize chat history with the question and its options
       setChatHistory([
         {
           role: 'assistant',
-          content: "Ask me: 'How is that wrong?!' Try it!"
+          content: "Ask me: 'Why's that right?!' or any other questions about this problem!"
         }
       ]);
 
@@ -416,7 +417,11 @@ function Home() {
         
         <div className="chat-messages">
           {chatHistory.map((msg, idx) => (
-            <div key={idx} className={`chat-message ${msg.role}`}>
+            <div 
+              key={idx} 
+              className={`chat-message ${msg.role}`}
+              style={{ whiteSpace: 'pre-line' }}
+            >
               {msg.content}
             </div>
           ))}
