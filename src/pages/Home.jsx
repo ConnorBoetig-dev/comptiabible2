@@ -128,7 +128,7 @@ function Home() {
       setChatHistory([
         {
           role: 'assistant',
-          content: "Ask me: 'Why's that right?!' or any other questions about this problem!"
+          content: "Ask me 'Hows that wrong?!' or any other questions about the problem you answered!"
         }
       ]);
 
@@ -334,7 +334,7 @@ function Home() {
     );
   };
 
-  const AIChatSection = ({ currentQuestion }) => {
+  const AIChatSection = ({ currentQuestion, selectedAnswer }) => {
     const inputRef = useRef(null);
     
     const handleSubmit = async (e) => {
@@ -359,8 +359,10 @@ function Home() {
               {
                 role: "system",
                 content: `You are a CompTIA exam tutor. The current question is: ${currentQuestion['question-text']}. 
+                         The user selected answer ${selectedAnswer || 'none'}: ${selectedAnswer ? currentQuestion[`option-${selectedAnswer.toLowerCase()}`] : 'No answer selected'}.
                          The correct answer is ${currentQuestion['correct answer']}: ${currentQuestion[`option-${currentQuestion['correct answer'].toLowerCase()}`]}.
-                         The explanation is: ${currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`]}`
+                         The explanation is: ${currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`]}
+                         When the user asks why something is wrong, refer to their selected answer and explain why it's incorrect and why the correct answer is better.`
               },
               ...chatHistory.map(msg => ({
                 role: msg.role,
@@ -698,7 +700,10 @@ function Home() {
           ) : (
             <article className="question-display">
               <QuestionDisplay questions={questions} />
-              {questions && <AIChatSection currentQuestion={questions[0]} />}
+              {questions && <AIChatSection 
+                currentQuestion={questions[0]} 
+                selectedAnswer={selectedAnswer}
+              />}
             </article>
           )}
         </section>
