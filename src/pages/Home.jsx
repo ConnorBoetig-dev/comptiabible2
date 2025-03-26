@@ -27,6 +27,7 @@ function Home() {
   const [isCommandsMode, setIsCommandsMode] = useState(false);
   const COMMANDS_API_URL = 'https://lklcife942.execute-api.us-east-2.amazonaws.com/prod/CommandQuestions';
   const [selectedCommandQuestionType, setSelectedCommandQuestionType] = useState('scenario_based');
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -90,6 +91,9 @@ function Home() {
   };
 
   const generateSingleQuestion = async () => {
+    if (isMobile) {
+      setIsQuestionModalOpen(true);
+    }
     setIsPortsMode(false);
     try {
       setLoading(true);
@@ -210,6 +214,9 @@ function Home() {
   };
 
   const generatePortsQuestion = async () => {
+    if (isMobile) {
+      setIsQuestionModalOpen(true);
+    }
     try {
       setLoading(true);
       setSelectedAnswer(null);
@@ -259,6 +266,9 @@ function Home() {
   };
 
   const generateCommandQuestion = async () => {
+    if (isMobile) {
+      setIsQuestionModalOpen(true);
+    }
     try {
       setLoading(true);
       setSelectedAnswer(null);
@@ -784,17 +794,16 @@ function Home() {
 
       <main style={{
         display: 'flex',
-        flexDirection: window.innerWidth <= 768 ? 'column' : 'row', // Stack on mobile
+        flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
         flex: 1,
         width: '100%',
-        overflow: 'auto', // Changed from 'hidden' to 'auto'
+        overflow: 'auto',
       }}>
         <aside style={{
           width: window.innerWidth <= 768 ? '100%' : '250px',
-          height: window.innerWidth <= 768 ? 'auto' : '100%',
+          height: 'auto',
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
           borderRight: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-          borderBottom: window.innerWidth <= 768 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
           overflow: 'auto',
           padding: '1rem',
         }}>
@@ -997,37 +1006,97 @@ function Home() {
           </section>
         </aside>
 
-        <section className="content-area" style={{
-          flex: 1,
-          backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
-          overflow: 'auto',
-          padding: '1rem',
-          minHeight: window.innerWidth <= 768 ? '50vh' : 'auto',
-        }}>
-          {loading ? (
-            <LoadingSpinner isDarkMode={isDarkMode} />
-          ) : examResults ? (
-            <ExamReview examResults={examResults} isDarkMode={isDarkMode} />
-          ) : !questions ? (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-              color: isDarkMode ? '#666' : '#999'
-            }}>
-              Generate a question to begin
-            </div>
-          ) : (
-            <article className="question-display">
-              <QuestionDisplay questions={questions} />
-              {questions && <AIChatSection 
-                currentQuestion={questions[0]} 
-                selectedAnswer={selectedAnswer}
-              />}
-            </article>
-          )}
-        </section>
+        {isMobile ? (
+          // Mobile content
+          <>
+            {isQuestionModalOpen ? (
+              // Question Modal for mobile
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+                zIndex: 1000,
+                padding: '1rem',
+                overflow: 'auto'
+              }}>
+                <button
+                  onClick={() => setIsQuestionModalOpen(false)}
+                  style={{
+                    position: 'absolute',
+                    top: '1rem',
+                    right: '1rem',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    fontSize: '1.5rem',
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                    cursor: 'pointer',
+                    padding: '0.5rem',
+                  }}
+                >
+                  ✕
+                </button>
+                <div style={{ marginTop: '2rem' }}>
+                  {loading ? (
+                    <LoadingSpinner isDarkMode={isDarkMode} />
+                  ) : questions ? (
+                    <article className="question-display">
+                      <QuestionDisplay questions={questions} />
+                      {questions && <AIChatSection 
+                        currentQuestion={questions[0]} 
+                        selectedAnswer={selectedAnswer}
+                      />}
+                    </article>
+                  ) : (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '80vh',
+                      color: isDarkMode ? '#666' : '#999'
+                    }}>
+                      Generate a question to begin
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
+          </>
+        ) : (
+          // Desktop content - unchanged
+          <section className="content-area" style={{
+            flex: 1,
+            backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+            overflow: 'auto',
+            padding: '1rem',
+          }}>
+            {loading ? (
+              <LoadingSpinner isDarkMode={isDarkMode} />
+            ) : examResults ? (
+              <ExamReview examResults={examResults} isDarkMode={isDarkMode} />
+            ) : !questions ? (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                color: isDarkMode ? '#666' : '#999'
+              }}>
+                Generate a question to begin
+              </div>
+            ) : (
+              <article className="question-display">
+                <QuestionDisplay questions={questions} />
+                {questions && <AIChatSection 
+                  currentQuestion={questions[0]} 
+                  selectedAnswer={selectedAnswer}
+                />}
+              </article>
+            )}
+          </section>
+        )}
 
         <aside style={{
           width: window.innerWidth <= 768 ? '100%' : '250px',
@@ -1037,6 +1106,7 @@ function Home() {
           borderTop: window.innerWidth <= 768 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
           overflow: 'auto',
           padding: '1rem',
+          display: window.innerWidth <= 768 ? 'none' : 'block',
         }}>
           <h2 style={{ 
             margin: '0 0 1rem 0', 
