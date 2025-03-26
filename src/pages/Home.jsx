@@ -862,7 +862,7 @@ function Home() {
             padding: '8px 0',
             borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
           }}>
-            Resources
+            Resources (coming soon)
           </h2>
           <div style={{ flex: 1, overflow: 'auto' }}>
             <ResourceAccordion isDarkMode={isDarkMode} />
