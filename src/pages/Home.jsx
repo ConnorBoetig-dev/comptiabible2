@@ -24,6 +24,8 @@ function Home() {
   const [isPortsMode, setIsPortsMode] = useState(false);
   const PORTS_API_URL = 'https://aa8ph8je38.execute-api.us-east-2.amazonaws.com/prod/questions';
   const [selectedQuestionType, setSelectedQuestionType] = useState('identify_protocol_from_number');
+  const [isCommandsMode, setIsCommandsMode] = useState(false);
+  const COMMANDS_API_URL = 'https://lklcife942.execute-api.us-east-2.amazonaws.com/prod/CommandQuestions';
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -243,6 +245,51 @@ function Home() {
     } catch (error) {
       console.error('Error fetching ports question:', error);
       alert('Failed to fetch ports question');
+      setQuestions(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateCommandQuestion = async () => {
+    try {
+      setLoading(true);
+      setSelectedAnswer(null);
+      setIsAnswerChecked(false);
+      setIsCommandsMode(true);
+      navigate('/', { state: { examResults: null } });
+      setChatHistory([
+        {
+          role: 'assistant',
+          content: "Ask me any questions about A+ 1102 commands!"
+        }
+      ]);
+
+      const response = await fetch(COMMANDS_API_URL, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Commands API Response:', data);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error('No question returned from API');
+      }
+
+      setQuestions([data[0]]);
+
+    } catch (error) {
+      console.error('Error fetching command question:', error);
+      alert('Failed to fetch command question');
       setQuestions(null);
     } finally {
       setLoading(false);
@@ -930,6 +977,32 @@ function Home() {
               }}
             >
               Study Ports
+            </button>
+          </section>
+
+          {/* Add Command Study section */}
+          <section className="commands-study" style={{ 
+            marginTop: '1rem', 
+            paddingTop: '1rem', 
+            borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` 
+          }}>
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Command Study A+ 1102</h2>
+            
+            <button
+              onClick={generateCommandQuestion}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: loading ? 'wait' : 'pointer',
+                fontSize: '0.9rem',
+              }}
+            >
+              Study Commands
             </button>
           </section>
         </aside>
