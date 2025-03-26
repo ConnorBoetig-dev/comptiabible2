@@ -17,43 +17,51 @@ def lambda_handler(event, context):
     try:
         print("Attempting to query DynamoDB table 'Commands'")
         
-        # Query items with question-type 'command_to_description'
+        # Get question type from query parameters, default to command_to_description
+        question_type = event.get('queryStringParameters', {}).get('type', 'command_to_description')
+        print(f"Querying for question type: {question_type}")
+        
+        # Query items with the specified question-type
         response = table.query(
-            KeyConditionExpression=Key('question-type').eq('command_to_description')
+            KeyConditionExpression=Key('question-type').eq(question_type)
         )
         
-        print(f"DynamoDB Response: {json.dumps(response, default=str)}")
-        
-        items = response.get('Items', [])
-        print(f"Found {len(items)} items")
-
-        if not items:
-            print("No items found in the table matching question-type='command_to_description'")
+        if not response['Items']:
             return {
                 'statusCode': 404,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'body': json.dumps({'error': 'No questions found'})
+                'body': json.dumps('No questions found for the specified type')
             }
-
-        # Randomly select one question
-        selected_question = random.choice(items)
-        print(f"Selected question: {json.dumps(selected_question, default=str)}")
-
-        # Add the explanation for the correct answer to match frontend expectations
-        correct_letter = selected_question['correct answer'].lower()
-        selected_question['explanation'] = selected_question[f'explanation-{correct_letter}']
-
-        # Return as a single-item array to match frontend expectations
+            
+        # Randomly select one question from the results
+        selected_question = random.choice(response['Items'])
+        
+        # Ensure consistent formatting
+        formatted_question = {
+            'question-text': selected_question['question-text'],
+            'option-a': selected_question['option-a'],
+            'option-b': selected_question['option-b'],
+            'option-c': selected_question['option-c'],
+            'option-d': selected_question['option-d'],
+            'explanation-a': selected_question['explanation-a'],
+            'explanation-b': selected_question['explanation-b'],
+            'explanation-c': selected_question['explanation-c'],
+            'explanation-d': selected_question['explanation-d'],
+            'correct answer': selected_question['correct answer'],
+            'question-type': selected_question['question-type'],
+            'question-id': selected_question.get('question-id', 0)
+        }
+        
+        # Print the formatted question for debugging
+        print(f"Returning formatted question: {json.dumps(formatted_question, cls=DecimalEncoder)}")
+        
         return {
             'statusCode': 200,
             'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET',
+                'Access-Control-Allow-Headers': 'Content-Type'
             },
-            'body': json.dumps([selected_question], cls=DecimalEncoder)
+            'body': json.dumps([formatted_question], cls=DecimalEncoder)
         }
 
     except Exception as e:

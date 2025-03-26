@@ -26,12 +26,19 @@ function Home() {
   const [selectedQuestionType, setSelectedQuestionType] = useState('identify_protocol_from_number');
   const [isCommandsMode, setIsCommandsMode] = useState(false);
   const COMMANDS_API_URL = 'https://lklcife942.execute-api.us-east-2.amazonaws.com/prod/CommandQuestions';
+  const [selectedCommandQuestionType, setSelectedCommandQuestionType] = useState('scenario_based');
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
     'identify_port_from_description': 'Identify Port (from Description)',
     'identify_protocol_from_description': 'Identify Protocol (from Description)',
     'compare_protocols': 'Compare Protocols'
+  };
+
+  const COMMAND_QUESTION_TYPES = {
+    'scenario_based': 'Scenario Based',
+    'command_to_description': 'Command to Description',
+    'description_to_command': 'Description to Command'
   };
 
   useEffect(() => {
@@ -265,7 +272,11 @@ function Home() {
         }
       ]);
 
-      const response = await fetch(COMMANDS_API_URL, {
+      const queryParams = new URLSearchParams({
+        type: selectedCommandQuestionType
+      }).toString();
+
+      const response = await fetch(`${COMMANDS_API_URL}?${queryParams}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -325,153 +336,114 @@ function Home() {
         : selectedAnswer.toUpperCase() === currentQuestion['correct answer']?.toUpperCase()
     );
 
-    // Get the explanation for the current question
-    const explanation = isPortQuestion 
-      ? currentQuestion['explanation']  // We now set this in the Lambda
-      : currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`];
+    // Only show explanation after answer is checked
+    const getExplanation = () => {
+      if (!isAnswerChecked || !selectedAnswer) return null;
+      
+      // Get explanation for the selected answer
+      const explanationKey = `explanation-${selectedAnswer.toLowerCase()}`;
+      return currentQuestion[explanationKey];
+    };
 
     return (
       <div style={{
         marginTop: '2rem',
-        padding: '1rem',
-        border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+        padding: '1.5rem',
+        backgroundColor: isDarkMode ? '#2d2d2d' : '#fff',
         borderRadius: '8px',
-        backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
-        color: isDarkMode ? '#ffffff' : '#000000',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        border: `1px solid ${isDarkMode ? '#404040' : '#eee'}`,
       }}>
-        <h4 style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>Generated Question</h4>
-        {questions.map((q, index) => (
-          <div key={q['question-id'] || index} style={{
-            marginBottom: '2rem',
-            padding: '1rem',
-            border: `1px solid ${isDarkMode ? '#404040' : '#eee'}`,
-            borderRadius: '4px',
-            backgroundColor: isDarkMode ? '#363636' : 'white',
-          }}>
-            <p style={{ 
-              fontWeight: 'bold', 
-              textAlign: 'left',
-              color: isDarkMode ? '#ffffff' : '#000000',
-            }}>
-              {q['question-text']}
-            </p>
-            <div style={{ textAlign: 'left', marginLeft: '1rem' }}>
-              {['option-a', 'option-b', 'option-c', 'option-d'].map((option, idx) => (
-                <div 
-                  key={option}
-                  className="answer-option"
-                  style={{ 
-                    marginBottom: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    color: isDarkMode ? '#ffffff' : '#000000',
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-                    backgroundColor: selectedAnswer === getAnswerLetter(idx)
-                      ? isDarkMode ? '#363636' : '#e3f2fd'
-                      : isDarkMode ? '#2d2d2d' : 'white',
-                  }}
-                  onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
-                >
-                  <input
-                    type="radio"
-                    checked={selectedAnswer === getAnswerLetter(idx)}
-                    onChange={() => {}}
-                    style={{ marginRight: '0.5rem' }}
-                  />
-                  <span>{getAnswerLetter(idx)}) {q[option]}</span>
-                </div>
-              ))}
-            </div>
+        <p style={{ 
+          fontWeight: 'bold',
+          marginBottom: '2rem',
+          fontSize: '1.3rem',
+          color: isDarkMode ? '#ffffff' : '#000000',
+        }}>
+          {currentQuestion['question-text']}
+        </p>
 
-            {/* Check Answer and Next buttons container */}
-            <div style={{
-              display: 'flex',
-              gap: '1rem',
-              marginTop: '1rem',
-            }}>
-              <button
-                onClick={checkAnswer}
-                disabled={!selectedAnswer}
-                className="interactive-button"
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: 'none',
-                  backgroundColor: isDarkMode ? '#0066cc' : '#28a745',
-                  color: '#ffffff',
-                  cursor: !selectedAnswer ? 'not-allowed' : 'pointer',
-                  opacity: !selectedAnswer ? 0.7 : 1,
-                }}
-              >
-                Check Answer
-              </button>
-              <button
-                onClick={generateSingleQuestion}
-                className="interactive-button"
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: 'none',
-                  backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
-                  color: '#ffffff',
-                  cursor: 'pointer',
-                }}
-              >
-                Next
-              </button>
-            </div>
-
-            {isAnswerChecked && selectedAnswer && (
-              <div style={{
-                marginTop: '1rem',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                backgroundColor: isDarkMode 
-                  ? (isCorrect ? '#1b4332' : '#442c2c')
-                  : (isCorrect ? '#d4edda' : '#f8d7da'),
-                color: isDarkMode
-                  ? '#ffffff'
-                  : (isCorrect ? '#155724' : '#721c24'),
-              }}>
-                <div style={{ fontWeight: 'bold' }}>
-                  {isCorrect ? 'Correct!' : 'Incorrect, try again'}
-                </div>
-                <div style={{ 
-                  marginTop: '0.5rem',
-                  color: isDarkMode ? '#cccccc' : '#333333',
-                  fontSize: '0.9rem'
-                }}>
-                  {explanation}
-                </div>
-              </div>
-            )}
-            
-            {/* Domain display removed */}
-          </div>
-        ))}
-        {/* Add Next Question button only in ports mode */}
-        {isPortsMode && (
-          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <button
-              onClick={generatePortsQuestion}
-              disabled={loading}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '1.2rem'
+        }}>
+          {['option-a', 'option-b', 'option-c', 'option-d'].map((option, idx) => (
+            <div 
+              key={option}
+              onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
               style={{
-                padding: '0.5rem 1rem',
+                padding: '1.2rem',
+                border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                 borderRadius: '4px',
-                border: 'none',
-                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
-                color: '#ffffff',
-                cursor: loading ? 'wait' : 'pointer',
-                fontSize: '1rem',
+                cursor: 'pointer',
+                backgroundColor: selectedAnswer === getAnswerLetter(idx)
+                  ? isAnswerChecked
+                    ? (selectedAnswer === currentQuestion['correct answer']
+                      ? isDarkMode ? '#1b4332' : '#e8f5e9'
+                      : isDarkMode ? '#442c2c' : '#ffebee')
+                    : isDarkMode ? '#363636' : '#e3f2fd'
+                  : isDarkMode ? '#2d2d2d' : 'white',
+                color: isDarkMode ? '#ffffff' : '#000000',
+                fontSize: '1.1rem',
+                transition: 'background-color 0.2s ease',
               }}
             >
-              Next Question
-            </button>
+              {getAnswerLetter(idx)}) {currentQuestion[option]}
+            </div>
+          ))}
+        </div>
+
+        {/* Explanation section */}
+        {isAnswerChecked && selectedAnswer && (
+          <div style={{
+            marginTop: '1rem',
+            padding: '1rem',
+            backgroundColor: isDarkMode ? '#363636' : '#f5f5f5',
+            borderRadius: '4px',
+          }}>
+            <strong>Explanation:</strong><br/>
+            {getExplanation()}
           </div>
         )}
+
+        {/* Check Answer and Next buttons container */}
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
+          marginTop: '1rem',
+        }}>
+          <button
+            onClick={checkAnswer}
+            disabled={!selectedAnswer}
+            style={{
+              padding: '0.8rem 1.5rem',
+              borderRadius: '4px',
+              border: 'none',
+              backgroundColor: isDarkMode ? '#28a745' : '#2e7d32',
+              color: '#ffffff',
+              cursor: !selectedAnswer ? 'not-allowed' : 'pointer',
+              opacity: !selectedAnswer ? 0.7 : 1,
+              fontSize: '1.1rem',
+            }}
+          >
+            Check Answer
+          </button>
+          <button
+            onClick={generateCommandQuestion}
+            style={{
+              padding: '0.8rem 1.5rem',
+              borderRadius: '4px',
+              border: 'none',
+              backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+              color: '#ffffff',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+            }}
+          >
+            Next
+          </button>
+        </div>
       </div>
     );
   };
@@ -987,6 +959,24 @@ function Home() {
             borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` 
           }}>
             <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Command Study A+ 1102</h2>
+            
+            <select
+              value={selectedCommandQuestionType}
+              onChange={(e) => setSelectedCommandQuestionType(e.target.value)}
+              style={{
+                width: '100%',
+                marginBottom: '1rem',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                color: isDarkMode ? '#ffffff' : '#000000',
+              }}
+            >
+              {Object.entries(COMMAND_QUESTION_TYPES).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
             
             <button
               onClick={generateCommandQuestion}
