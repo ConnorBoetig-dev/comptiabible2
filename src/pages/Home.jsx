@@ -21,6 +21,8 @@ function Home() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod';
+  const [isPortsMode, setIsPortsMode] = useState(false);
+  const PORTS_API_URL = 'https://aa8ph8je38.execute-api.us-east-2.amazonaws.com/prod/questions';
 
   useEffect(() => {
     function handleResize() {
@@ -71,6 +73,7 @@ function Home() {
   };
 
   const generateSingleQuestion = async () => {
+    setIsPortsMode(false);
     try {
       setLoading(true);
       setSelectedAnswer(null);
@@ -189,6 +192,53 @@ function Home() {
     }
   };
 
+  const generatePortsQuestion = async () => {
+    try {
+      setLoading(true);
+      setSelectedAnswer(null);
+      setIsAnswerChecked(false);
+      setIsPortsMode(true);
+      navigate('/', { state: { examResults: null } });
+      setChatHistory([]);
+
+      const response = await fetch(PORTS_API_URL, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Ports API Response:', data);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error('No question returned from API');
+      }
+
+      // Take just the first question
+      setQuestions([data[0]]);
+      setChatHistory([
+        {
+          role: 'assistant',
+          content: "Ask me any questions about ports and protocols!"
+        }
+      ]);
+
+    } catch (error) {
+      console.error('Error fetching ports question:', error);
+      alert('Failed to fetch ports question');
+      setQuestions(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const QuestionDisplay = ({ questions }) => {
     // Early return if no questions
     if (!questions || !Array.isArray(questions) || questions.length === 0) {
@@ -209,16 +259,19 @@ function Home() {
     };
 
     const currentQuestion = questions[0];
+    const isPortQuestion = isPortsMode && currentQuestion;
     
-    // Safely check the answer
-    const isCorrect = selectedAnswer && currentQuestion['correct answer']  // Changed from 'correct-answer'
-      ? currentQuestion['correct answer'].toUpperCase() === selectedAnswer.toUpperCase()
-      : false;
+    // Modify the answer checking logic to handle both types of questions
+    const isCorrect = selectedAnswer && (
+      isPortQuestion 
+        ? currentQuestion['correct-answer']?.toUpperCase() === selectedAnswer.toUpperCase()
+        : currentQuestion['correct answer']?.toUpperCase() === selectedAnswer.toUpperCase()
+    );
 
-    // Safely get the explanation
-    const selectedExplanation = selectedAnswer && currentQuestion 
-      ? currentQuestion[`explanation-${selectedAnswer.toLowerCase()}`] || ''
-      : '';
+    // Get the explanation for the current question
+    const explanation = isPortQuestion 
+      ? currentQuestion['explanation']
+      : currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`];
 
     return (
       <div style={{
@@ -334,7 +387,7 @@ function Home() {
                   color: isDarkMode ? '#cccccc' : '#333333',
                   fontSize: '0.9rem'
                 }}>
-                  {selectedExplanation}
+                  {explanation}
                 </div>
               </div>
             )}
@@ -349,6 +402,26 @@ function Home() {
             </p>
           </div>
         ))}
+        {/* Add Next Question button only in ports mode */}
+        {isPortsMode && (
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+            <button
+              onClick={generatePortsQuestion}
+              disabled={loading}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: loading ? 'wait' : 'pointer',
+                fontSize: '1rem',
+              }}
+            >
+              Next Question
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -819,6 +892,27 @@ function Home() {
               }}
             >
               Start Practice Exam
+            </button>
+          </section>
+
+          {/* Add new Ports Study section */}
+          <section className="ports-study" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` }}>
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Ports Study</h2>
+            <button
+              onClick={generatePortsQuestion}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: loading ? 'wait' : 'pointer',
+                fontSize: '0.9rem',
+              }}
+            >
+              Study Ports
             </button>
           </section>
         </aside>
