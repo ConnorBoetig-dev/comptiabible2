@@ -19,7 +19,17 @@ function Home() {
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod';
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 768);
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const examOptions = {
     'A1101': 'A+ 1101',
@@ -439,18 +449,22 @@ function Home() {
           {isChatLoading && <div className="chat-loading">AI is thinking...</div>}
         </div>
 
-        <form onSubmit={handleSubmit} className="chat-form">
+        <form onSubmit={handleSubmit} className="chat-form" style={{
+          display: 'flex',
+          gap: '8px',
+          padding: isMobile ? '8px' : '16px',
+        }}>
           <input
             ref={inputRef}
             type="text"
             value={chatMessage}
             onChange={handleInputChange}
             placeholder="Type your question here..."
-            className="chat-input"
             style={{
               padding: '0.75rem',
               borderRadius: '4px',
-              width: '100%',
+              flex: 1,
+              minWidth: 0, // Important for flex sizing
               backgroundColor: isDarkMode ? '#363636' : '#ffffff',
               color: isDarkMode ? '#ffffff' : '#000000',
             }}
@@ -459,13 +473,13 @@ function Home() {
           <button 
             type="submit" 
             disabled={isChatLoading || !chatMessage.trim()}
-            className="chat-submit"
             style={{
-              padding: '0.75rem 1.5rem',
+              padding: isMobile ? '0.5rem 1rem' : '0.75rem 1.5rem',
               borderRadius: '4px',
               border: 'none',
               backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
               color: '#ffffff',
+              whiteSpace: 'nowrap',
               cursor: !chatMessage.trim() ? 'not-allowed' : 'pointer',
               opacity: !chatMessage.trim() ? 0.7 : 1,
             }}
@@ -679,27 +693,22 @@ function Home() {
         backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
         borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
       }}>
-        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>TheCompTIABible</h1>
+        <h1 style={{ margin: 0, fontSize: '1.2rem' }}>TheCompTIABible</h1>
       </header>
-
-      <nav style={{
-        backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
-        padding: '0.5rem 1rem',
-        color: '#ffffff',
-      }}>
-        <div>Navigation</div>
-      </nav>
 
       <main style={{
         display: 'flex',
+        flexDirection: window.innerWidth <= 768 ? 'column' : 'row', // Stack on mobile
         flex: 1,
         width: '100%',
-        overflow: 'hidden', // Add scroll to individual sections if needed
+        overflow: 'auto', // Changed from 'hidden' to 'auto'
       }}>
         <aside style={{
-          width: '250px',
+          width: window.innerWidth <= 768 ? '100%' : '250px',
+          height: window.innerWidth <= 768 ? 'auto' : '100%',
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
-          borderRight: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          borderRight: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          borderBottom: window.innerWidth <= 768 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
           overflow: 'auto',
           padding: '1rem',
         }}>
@@ -819,6 +828,7 @@ function Home() {
           backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
           overflow: 'auto',
           padding: '1rem',
+          minHeight: window.innerWidth <= 768 ? '50vh' : 'auto',
         }}>
           {loading ? (
             <LoadingSpinner isDarkMode={isDarkMode} />
@@ -846,13 +856,13 @@ function Home() {
         </section>
 
         <aside style={{
-          width: '250px',
+          width: window.innerWidth <= 768 ? '100%' : '250px',
+          height: window.innerWidth <= 768 ? 'auto' : '100%',
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
-          borderLeft: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          borderLeft: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          borderTop: window.innerWidth <= 768 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
           overflow: 'auto',
           padding: '1rem',
-          display: 'flex',
-          flexDirection: 'column',
         }}>
           <h2 style={{ 
             margin: '0 0 1rem 0', 

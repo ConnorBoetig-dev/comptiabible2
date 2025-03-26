@@ -26,3 +26,34 @@ body {
 
 /* Remove or comment out any other styling that might affect layout */
 
+/* Add these responsive styles */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .chat-section {
+    margin-top: 1rem !important;
+    padding: 0.5rem !important;
+  }
+
+  .chat-messages {
+    max-height: 150px !important;
+  }
+
+  .chat-message {
+    padding: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select,
+  textarea,
+  input {
+    font-size: 16px;
+  }
+}
+
+
