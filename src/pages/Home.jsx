@@ -392,14 +392,7 @@ function Home() {
               </div>
             )}
             
-            <p style={{ 
-              marginTop: '1rem', 
-              color: isDarkMode ? '#999999' : '#666666', 
-              fontSize: '0.9rem',
-              textAlign: 'left' 
-            }}>
-              Domain: {q.domain}
-            </p>
+            {/* Domain display removed */}
           </div>
         ))}
         {/* Add Next Question button only in ports mode */}
