@@ -108,4 +108,70 @@
   transform: translateY(1px);
 }
 
+/* Updated Accordion styles */
+.resource-accordion {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.accordion-item {
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.accordion-item:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.accordion-header {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.accordion-header:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .accordion-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.accordion-content-wrapper {
+  transition: max-height 0.3s ease-out;
+  overflow: hidden;
+}
+
+.accordion-content {
+  padding: 0.5rem;
+}
+
+.resource-link {
+  display: block;
+  padding: 0.5rem;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.resource-link:hover {
+  transform: translateX(2px);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .resource-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+
+
 

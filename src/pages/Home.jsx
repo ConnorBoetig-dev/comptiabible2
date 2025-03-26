@@ -550,6 +550,118 @@ function Home() {
     );
   };
 
+  const ResourceAccordion = ({ isDarkMode }) => {
+    const [openSections, setOpenSections] = useState({});
+
+    const toggleSection = (section) => {
+      setOpenSections(prev => {
+        const newState = {...prev};
+        // Close all other sections first
+        Object.keys(newState).forEach(key => {
+          newState[key] = false;
+        });
+        // Toggle the clicked section
+        newState[section] = !prev[section];
+        return newState;
+      });
+    };
+
+    const resources = {
+      'A+ 1101': [
+        { title: 'Hardware Components', url: '#hardware' },
+        { title: 'Mobile Devices', url: '#mobile' },
+        { title: 'Networking', url: '#networking' },
+        { title: 'Virtualization', url: '#virtualization' },
+      ],
+      'A+ 1102': [
+        { title: 'Operating Systems', url: '#os' },
+        { title: 'Security', url: '#security' },
+        { title: 'Software', url: '#software' },
+        { title: 'Operational Procedures', url: '#procedures' },
+      ],
+      'Network+': [
+        { title: 'Network Architecture', url: '#net-arch' },
+        { title: 'Network Operations', url: '#net-ops' },
+        { title: 'Network Security', url: '#net-security' },
+        { title: 'Troubleshooting', url: '#troubleshooting' },
+      ],
+      'Security+': [
+        { title: 'Attacks & Threats', url: '#attacks' },
+        { title: 'Architecture & Design', url: '#arch-design' },
+        { title: 'Implementation', url: '#implementation' },
+        { title: 'Operations', url: '#operations' },
+      ],
+    };
+
+    return (
+      <div style={{ width: '100%' }}>
+        {Object.entries(resources).map(([section, links]) => (
+          <div key={section} style={{ marginBottom: '10px' }}>
+            <div 
+              onClick={() => toggleSection(section)}
+              style={{
+                padding: '8px 12px',
+                backgroundColor: isDarkMode ? '#363636' : '#f0f0f0',
+                color: isDarkMode ? '#ffffff' : '#333333',
+                cursor: 'pointer',
+                borderRadius: '4px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontWeight: 'bold',
+                border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`
+              }}
+            >
+              <span>{section}</span>
+              <span style={{ 
+                transition: 'transform 0.3s',
+                transform: openSections[section] ? 'rotate(180deg)' : 'rotate(0deg)',
+                fontSize: '12px'
+              }}>▼</span>
+            </div>
+            
+            <div style={{
+              overflow: 'hidden',
+              maxHeight: openSections[section] ? '500px' : '0',
+              transition: 'max-height 0.3s ease-in-out',
+              backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+              border: openSections[section] ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
+              borderTop: 'none',
+              borderBottomLeftRadius: '4px',
+              borderBottomRightRadius: '4px',
+            }}>
+              {links.map((link, index) => (
+                <a 
+                  key={index}
+                  href={link.url}
+                  style={{
+                    display: 'block',
+                    padding: '8px 16px',
+                    color: isDarkMode ? '#cccccc' : '#666666',
+                    textDecoration: 'none',
+                    borderBottom: index < links.length - 1 ? 
+                      `1px solid ${isDarkMode ? '#333333' : '#f0f0f0'}` : 'none',
+                    transition: 'background-color 0.2s, padding-left 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = isDarkMode ? '#363636' : '#f5f5f5';
+                    e.target.style.paddingLeft = '20px';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                    e.target.style.paddingLeft = '16px';
+                  }}
+                >
+                  {link.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="app-container" style={{
       height: '100vh',
@@ -739,16 +851,22 @@ function Home() {
           borderLeft: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
           overflow: 'auto',
           padding: '1rem',
+          display: 'flex',
+          flexDirection: 'column',
         }}>
-          <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>Resources</h2>
-          <p style={{ 
-            color: isDarkMode ? '#cccccc' : '#666666',
-            fontSize: '0.9rem',
-            margin: 0,
-            lineHeight: '1.5'
+          <h2 style={{ 
+            margin: '0 0 1rem 0', 
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            color: isDarkMode ? '#ffffff' : '#000000',
+            padding: '8px 0',
+            borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
           }}>
-            Useful CompTIA study resources and links will be added here soon.
-          </p>
+            Resources
+          </h2>
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            <ResourceAccordion isDarkMode={isDarkMode} />
+          </div>
         </aside>
       </main>
 
