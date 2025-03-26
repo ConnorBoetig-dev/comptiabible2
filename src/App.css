@@ -41,3 +41,71 @@
   color: #888;
 }
 
+/* Button animations */
+.interactive-button {
+  transition: all 0.2s ease-in-out;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.interactive-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Answer option animations */
+.answer-option {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.answer-option:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.answer-option::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.answer-option:hover::after {
+  opacity: 1;
+}
+
+/* Chat input animations */
+.chat-input {
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.chat-input:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Send button pulse animation */
+.chat-submit {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.chat-submit:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+}
+
+.chat-submit:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+

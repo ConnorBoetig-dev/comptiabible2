@@ -239,12 +239,19 @@ function Home() {
               {['option-a', 'option-b', 'option-c', 'option-d'].map((option, idx) => (
                 <div 
                   key={option}
+                  className="answer-option"
                   style={{ 
                     marginBottom: '0.5rem',
                     display: 'flex',
                     alignItems: 'center',
                     cursor: 'pointer',
                     color: isDarkMode ? '#ffffff' : '#000000',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                    backgroundColor: selectedAnswer === getAnswerLetter(idx)
+                      ? isDarkMode ? '#363636' : '#e3f2fd'
+                      : isDarkMode ? '#2d2d2d' : 'white',
                   }}
                   onClick={() => handleAnswerSelect(getAnswerLetter(idx))}
                 >
@@ -268,6 +275,7 @@ function Home() {
               <button
                 onClick={checkAnswer}
                 disabled={!selectedAnswer}
+                className="interactive-button"
                 style={{
                   padding: '0.5rem 1rem',
                   borderRadius: '4px',
@@ -282,6 +290,7 @@ function Home() {
               </button>
               <button
                 onClick={generateSingleQuestion}
+                className="interactive-button"
                 style={{
                   padding: '0.5rem 1rem',
                   borderRadius: '4px',
@@ -438,12 +447,28 @@ function Home() {
             onChange={handleInputChange}
             placeholder="Type your question here..."
             className="chat-input"
+            style={{
+              padding: '0.75rem',
+              borderRadius: '4px',
+              width: '100%',
+              backgroundColor: isDarkMode ? '#363636' : '#ffffff',
+              color: isDarkMode ? '#ffffff' : '#000000',
+            }}
             autoComplete="off"
           />
           <button 
             type="submit" 
             disabled={isChatLoading || !chatMessage.trim()}
             className="chat-submit"
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '4px',
+              border: 'none',
+              backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+              color: '#ffffff',
+              cursor: !chatMessage.trim() ? 'not-allowed' : 'pointer',
+              opacity: !chatMessage.trim() ? 0.7 : 1,
+            }}
           >
             Send
           </button>
