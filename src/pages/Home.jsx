@@ -23,6 +23,14 @@ function Home() {
   const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod';
   const [isPortsMode, setIsPortsMode] = useState(false);
   const PORTS_API_URL = 'https://aa8ph8je38.execute-api.us-east-2.amazonaws.com/prod/questions';
+  const [selectedQuestionType, setSelectedQuestionType] = useState('identify_protocol_from_number');
+
+  const QUESTION_TYPE_LABELS = {
+    'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
+    'identify_port_from_description': 'Identify Port (from Description)',
+    'identify_protocol_from_description': 'Identify Protocol (from Description)',
+    'compare_protocols': 'Compare Protocols'
+  };
 
   useEffect(() => {
     function handleResize() {
@@ -199,9 +207,18 @@ function Home() {
       setIsAnswerChecked(false);
       setIsPortsMode(true);
       navigate('/', { state: { examResults: null } });
-      setChatHistory([]);
+      setChatHistory([
+        {
+          role: 'assistant',
+          content: "Ask me any questions about ports and protocols!"
+        }
+      ]);
 
-      const response = await fetch(PORTS_API_URL, {
+      const queryParams = new URLSearchParams({
+        questionType: selectedQuestionType
+      }).toString();
+
+      const response = await fetch(`${PORTS_API_URL}?${queryParams}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -221,14 +238,7 @@ function Home() {
         throw new Error('No question returned from API');
       }
 
-      // Take just the first question
       setQuestions([data[0]]);
-      setChatHistory([
-        {
-          role: 'assistant',
-          content: "Ask me any questions about ports and protocols!"
-        }
-      ]);
 
     } catch (error) {
       console.error('Error fetching ports question:', error);
@@ -264,13 +274,13 @@ function Home() {
     // Modify the answer checking logic to handle both types of questions
     const isCorrect = selectedAnswer && (
       isPortQuestion 
-        ? currentQuestion['correct-answer']?.toUpperCase() === selectedAnswer.toUpperCase()
-        : currentQuestion['correct answer']?.toUpperCase() === selectedAnswer.toUpperCase()
+        ? selectedAnswer.toUpperCase() === currentQuestion['correct answer']?.toUpperCase()
+        : selectedAnswer.toUpperCase() === currentQuestion['correct answer']?.toUpperCase()
     );
 
     // Get the explanation for the current question
     const explanation = isPortQuestion 
-      ? currentQuestion['explanation']
+      ? currentQuestion['explanation']  // We now set this in the Lambda
       : currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`];
 
     return (
@@ -380,7 +390,7 @@ function Home() {
                   : (isCorrect ? '#155724' : '#721c24'),
               }}>
                 <div style={{ fontWeight: 'bold' }}>
-                  {isCorrect ? 'Correct!' : 'Incorrect'}
+                  {isCorrect ? 'Correct!' : 'Incorrect, try again'}
                 </div>
                 <div style={{ 
                   marginTop: '0.5rem',
@@ -474,21 +484,13 @@ function Home() {
         }]);
       } finally {
         setIsChatLoading(false);
-        // Focus on input after submitting
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.focus();
-          }
-        }, 0);
+        // Remove the auto-focus after submission
       }
     };
 
     const handleInputChange = (e) => {
       setChatMessage(e.target.value);
-      // Ensure focus stays on the input
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+      // Remove the auto-focus on input change
     };
     
     // Re-focus the input whenever chatMessage changes
@@ -521,7 +523,6 @@ function Home() {
           padding: isMobile ? '8px' : '16px',
         }}>
           <input
-            ref={inputRef}
             type="text"
             value={chatMessage}
             onChange={handleInputChange}
@@ -889,8 +890,31 @@ function Home() {
           </section>
 
           {/* Add new Ports Study section */}
-          <section className="ports-study" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` }}>
+          <section className="ports-study" style={{ 
+            marginTop: '1rem', 
+            paddingTop: '1rem', 
+            borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` 
+          }}>
             <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Ports Study</h2>
+            
+            <select
+              value={selectedQuestionType}
+              onChange={(e) => setSelectedQuestionType(e.target.value)}
+              style={{
+                width: '100%',
+                marginBottom: '1rem',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                color: isDarkMode ? '#ffffff' : '#000000',
+              }}
+            >
+              {Object.entries(QUESTION_TYPE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+
             <button
               onClick={generatePortsQuestion}
               disabled={loading}
