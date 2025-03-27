@@ -38,7 +38,8 @@ body {
   }
 
   .chat-messages {
-    max-height: 150px !important;
+    min-height: 150px;
+    transition: height 0.3s ease;
   }
 
   .chat-message {
@@ -47,12 +48,18 @@ body {
   }
 }
 
+/* Ensure smooth scrolling behavior */
+.chat-messages {
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
 /* Prevent zoom on input focus on iOS */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   select,
   textarea,
   input {
-    font-size: 16px;
+    font-size: 16px !important; /* Force 16px minimum */
+    -webkit-text-size-adjust: 100%;
   }
 }
 

@@ -319,10 +319,8 @@ function Home() {
   };
 
   const QuestionDisplay = ({ questions }) => {
-    // Early return if no questions
-    if (!questions || !Array.isArray(questions) || questions.length === 0) {
-      return null;
-    }
+    // Add ref for explanation section
+    const explanationRef = useRef(null);
 
     const handleAnswerSelect = (answer) => {
       setSelectedAnswer(answer);
@@ -331,6 +329,13 @@ function Home() {
 
     const checkAnswer = () => {
       setIsAnswerChecked(true);
+      // Add small delay to ensure explanation is rendered before scrolling
+      setTimeout(() => {
+        explanationRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 100);
     };
 
     const getAnswerLetter = (index) => {
@@ -407,12 +412,15 @@ function Home() {
 
         {/* Explanation section */}
         {isAnswerChecked && selectedAnswer && (
-          <div style={{
-            marginTop: '1rem',
-            padding: '1rem',
-            backgroundColor: isDarkMode ? '#363636' : '#f5f5f5',
-            borderRadius: '4px',
-          }}>
+          <div 
+            ref={explanationRef}
+            style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: isDarkMode ? '#363636' : '#f5f5f5',
+              borderRadius: '4px',
+            }}
+          >
             <strong>Explanation:</strong><br/>
             {getExplanation()}
           </div>
@@ -461,7 +469,37 @@ function Home() {
 
   const AIChatSection = ({ currentQuestion, selectedAnswer }) => {
     const [localChatMessage, setLocalChatMessage] = useState('');
-    
+    const chatInputRef = useRef(null);
+    const chatMessagesRef = useRef(null);
+
+    // Function to scroll to chat input
+    const scrollToChatInput = () => {
+      chatInputRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'center'
+      });
+    };
+
+    // Add focus and click handlers for the input
+    const handleInputFocus = () => {
+      scrollToChatInput();
+    };
+
+    // Add this function to handle auto-scrolling
+    const scrollToBottom = () => {
+      if (chatMessagesRef.current) {
+        chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+      }
+      // Add this to scroll the entire page to the input
+      if (isMobile) {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    // Modify the handleSubmit function to include auto-scroll
     const handleSubmit = async (e) => {
       e.preventDefault();
       if (!localChatMessage.trim()) return;
@@ -470,7 +508,9 @@ function Home() {
       const userMessage = localChatMessage;
       setLocalChatMessage('');
       setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
-      
+      // Scroll after user message
+      setTimeout(scrollToBottom, 100);
+
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -513,38 +553,74 @@ function Home() {
           role: 'assistant', 
           content: data.choices[0].message.content 
         }]);
+        // Scroll after AI response with a slight delay
+        setTimeout(scrollToBottom, 100);
       } catch (error) {
         console.error('Chat error:', error);
         setChatHistory(prev => [...prev, { 
           role: 'assistant', 
           content: `Error: ${error.message}. Please try again.` 
         }]);
+        setTimeout(scrollToBottom, 100);
       } finally {
         setIsChatLoading(false);
+        // Add one final scroll to ensure we're at the bottom
+        setTimeout(scrollToBottom, 200);
       }
     };
+
+    // Add useEffect to scroll when chat history changes
+    useEffect(() => {
+      if (chatHistory.length > 0) {
+        setTimeout(scrollToBottom, 100);
+      }
+    }, [chatHistory]);
 
     const handleInputChange = (e) => {
       setLocalChatMessage(e.target.value);
     };
 
+    // Calculate dynamic height based on chat history
+    const chatHeight = isMobile ? 
+      Math.min(chatHistory.length * 80 + 100, window.innerHeight * 0.6) : // On mobile: 80px per message + padding, max 60% of viewport
+      200; // Desktop: fixed height
+
     return (
-      <div className="chat-section" style={{ marginTop: '20px' }}>
+      <div className="chat-section" style={{ 
+        marginTop: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px'
+      }}>
         <h4 style={{ marginBottom: '10px' }}>Need further clarification? Ask AI.</h4>
         
-        <div className="chat-messages" style={{ 
-          maxHeight: '200px',
-          overflowY: 'auto',
-          marginBottom: '10px'
-        }}>
+        <div 
+          ref={chatMessagesRef}
+          className="chat-messages" 
+          style={{ 
+            height: chatHeight,
+            maxHeight: isMobile ? `${chatHeight}px` : '200px',
+            overflowY: 'auto',
+            marginBottom: '10px',
+            border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+            borderRadius: '4px',
+            padding: '10px',
+            scrollbarWidth: 'thin',
+            scrollbarColor: isDarkMode ? '#666 #2d2d2d' : '#999 #f0f0f0',
+            paddingRight: '10px',
+            transition: 'height 0.3s ease', // Smooth height transition
+          }}
+        >
           {chatHistory.map((msg, idx) => (
             <div 
               key={idx} 
               style={{
                 padding: '8px',
                 marginBottom: '8px',
-                backgroundColor: msg.role === 'assistant' ? (isDarkMode ? '#363636' : '#f0f0f0') : 'transparent',
-                borderRadius: '4px'
+                backgroundColor: msg.role === 'assistant' ? 
+                  (isDarkMode ? '#363636' : '#f0f0f0') : 'transparent',
+                borderRadius: '4px',
+                wordBreak: 'break-word' // Ensure long words don't overflow
               }}
             >
               {msg.content}
@@ -559,9 +635,12 @@ function Home() {
           position: 'relative'
         }}>
           <input
+            ref={chatInputRef}
             type="text"
             value={localChatMessage}
             onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onClick={handleInputFocus}
             placeholder="Type your question here..."
             style={{
               padding: '12px',
@@ -570,7 +649,8 @@ function Home() {
               backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
               color: isDarkMode ? '#ffffff' : '#000000',
               width: '100%',
-              fontSize: '14px'
+              fontSize: '16px',  // Changed from 14px to 16px to prevent zoom
+              '-webkit-text-size-adjust': '100%',  // Add this
             }}
           />
           <button 
