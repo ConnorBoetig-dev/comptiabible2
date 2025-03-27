@@ -172,6 +172,25 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Add these styles for smooth transitions */
+.sidebar-transition {
+  transition: width 0.3s ease, padding 0.3s ease;
+}
 
+.content-transition {
+  transition: margin-left 0.3s ease;
+}
 
+/* Add hover effect for the clip button */
+.sidebar-clip:hover {
+  background-color: var(--hover-color) !important;
+}
 
+/* Dark mode support */
+[data-theme='dark'] .sidebar-clip:hover {
+  --hover-color: #505050;
+}
+
+[data-theme='light'] .sidebar-clip:hover {
+  --hover-color: #c0c0c0;
+}

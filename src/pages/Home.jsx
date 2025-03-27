@@ -28,6 +28,7 @@ function Home() {
   const COMMANDS_API_URL = 'https://lklcife942.execute-api.us-east-2.amazonaws.com/prod/CommandQuestions';
   const [selectedCommandQuestionType, setSelectedCommandQuestionType] = useState('scenario_based');
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -804,7 +805,7 @@ function Home() {
           height: 'auto',
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
           borderRight: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-          overflow: 'auto',
+          overflow: 'hidden',
           padding: '1rem',
         }}>
           <section className="question-generator">
@@ -1071,6 +1072,8 @@ function Home() {
             backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
             overflow: 'auto',
             padding: '1rem',
+            marginRight: window.innerWidth <= 768 ? 0 : (isSidebarCollapsed ? '50px' : '250px'),
+            transition: 'margin-right 0.3s ease',
           }}>
             {loading ? (
               <LoadingSpinner isDarkMode={isDarkMode} />
@@ -1099,27 +1102,70 @@ function Home() {
         )}
 
         <aside style={{
-          width: window.innerWidth <= 768 ? '100%' : '250px',
+          width: window.innerWidth <= 768 ? '100%' : (isSidebarCollapsed ? '50px' : '250px'),
           height: window.innerWidth <= 768 ? 'auto' : '100%',
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
           borderLeft: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
           borderTop: window.innerWidth <= 768 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
-          overflow: 'auto',
-          padding: '1rem',
+          overflow: 'hidden',
+          padding: isSidebarCollapsed ? '1rem 0' : '1rem',
+          position: 'fixed',
+          right: 0,
+          top: '64px',
+          bottom: 0,
+          transition: 'width 0.3s ease',
           display: window.innerWidth <= 768 ? 'none' : 'block',
         }}>
-          <h2 style={{ 
-            margin: '0 0 1rem 0', 
-            fontSize: '1.2rem',
-            fontWeight: 'bold',
-            color: isDarkMode ? '#ffffff' : '#000000',
-            padding: '8px 0',
-            borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          {/* Add the clip button */}
+          {!window.innerWidth <= 768 && (
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              style={{
+                position: 'absolute',
+                left: '-12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '24px',
+                height: '50px',
+                backgroundColor: isDarkMode ? '#404040' : '#ddd',
+                border: 'none',
+                borderRadius: '4px 0 0 4px',
+                cursor: 'pointer',
+                zIndex: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <span style={{
+                transform: isSidebarCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+                fontSize: '12px',
+              }}>
+                ◀
+              </span>
+            </button>
+          )}
+
+          {/* Wrap the resources content */}
+          <div style={{
+            opacity: isSidebarCollapsed ? 0 : 1,
+            visibility: isSidebarCollapsed ? 'hidden' : 'visible',
+            transition: 'opacity 0.2s ease, visibility 0.2s ease',
           }}>
-            Resources (coming soon)
-          </h2>
-          <div style={{ flex: 1, overflow: 'auto' }}>
-            <ResourceAccordion isDarkMode={isDarkMode} />
+            <h2 style={{ 
+              margin: '0 0 1rem 0', 
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              color: isDarkMode ? '#ffffff' : '#000000',
+              padding: '8px 0',
+              borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+            }}>
+              Resources (coming soon)
+            </h2>
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <ResourceAccordion isDarkMode={isDarkMode} />
+            </div>
           </div>
         </aside>
       </main>
