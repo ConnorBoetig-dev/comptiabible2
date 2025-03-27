@@ -842,20 +842,18 @@ function Home() {
         flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
         flex: 1,
         width: '100%',
-        overflow: 'auto',
+        overflow: 'hidden',
         overflowX: 'hidden',
-        // Add this for mobile
-        minHeight: window.innerWidth <= 768 ? 'auto' : '100%',
+        height: window.innerWidth <= 768 ? 'auto' : '100%',
       }}>
         <aside style={{
           width: window.innerWidth <= 768 ? '100%' : '250px',
-          height: window.innerWidth <= 768 ? 'auto' : '100%', // Changed from 'auto' to ensure full height
+          height: window.innerWidth <= 768 ? 'auto' : '100%',
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
           borderRight: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-          overflow: window.innerWidth <= 768 ? 'visible' : 'hidden', // Changed from 'hidden' to 'visible' on mobile
+          overflow: window.innerWidth <= 768 ? 'visible' : 'auto',
           padding: isMobile ? '0.5rem' : '1rem',
-          // Remove position: fixed on mobile if present
-          position: window.innerWidth <= 768 ? 'relative' : 'fixed',
+          position: window.innerWidth <= 768 ? 'relative' : 'static',
         }}>
           <section className="question-generator">
             <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Single Question Generator</h2>

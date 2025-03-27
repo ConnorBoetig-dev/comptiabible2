@@ -28,7 +28,7 @@ html, body {
   position: relative;
 }
 
-/* Add this media query for mobile devices */
+/* Mobile-specific styles */
 @media (max-width: 768px) {
   html, body, #root {
     touch-action: pan-y pinch-zoom;
@@ -46,6 +46,19 @@ html, body {
   aside {
     position: relative !important;
     overflow-y: visible !important;
+  }
+}
+
+/* Desktop-specific styles */
+@media (min-width: 769px) {
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .app-container {
+    height: 100vh;
+    overflow: hidden;
   }
 }
 
