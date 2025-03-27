@@ -806,7 +806,7 @@ function Home() {
           backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
           borderRight: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
           overflow: 'hidden',
-          padding: '1rem',
+          padding: isMobile ? '0.5rem' : '1rem', // Reduce padding on mobile
         }}>
           <section className="question-generator">
             <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Single Question Generator</h2>
@@ -849,14 +849,14 @@ function Home() {
               onClick={generateSingleQuestion}
               disabled={loading}
               style={{
-                width: '100%',
-                padding: '0.25rem',
+                width: isMobile ? '95%' : '100%',
+                padding: isMobile ? '0.25rem 0.5rem' : '0.25rem',
                 borderRadius: '3px',
                 border: 'none',
                 backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
                 color: '#ffffff',
                 cursor: loading ? 'wait' : 'pointer',
-                fontSize: '0.9rem',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}
             >
               Generate Question
@@ -904,14 +904,14 @@ function Home() {
               onClick={handlePracticeExamGenerate}
               disabled={loading}
               style={{
-                width: '100%',
-                padding: '0.25rem',
+                width: isMobile ? '95%' : '100%',
+                padding: isMobile ? '0.25rem 0.5rem' : '0.25rem',
                 borderRadius: '3px',
                 border: 'none',
                 backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
                 color: '#ffffff',
                 cursor: loading ? 'wait' : 'pointer',
-                fontSize: '0.9rem',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}
             >
               Start Practice Exam
@@ -948,14 +948,14 @@ function Home() {
               onClick={generatePortsQuestion}
               disabled={loading}
               style={{
-                width: '100%',
-                padding: '0.25rem',
+                width: isMobile ? '95%' : '100%',
+                padding: isMobile ? '0.25rem 0.5rem' : '0.25rem',
                 borderRadius: '3px',
                 border: 'none',
                 backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
                 color: '#ffffff',
                 cursor: loading ? 'wait' : 'pointer',
-                fontSize: '0.9rem',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}
             >
               Study Ports
@@ -992,14 +992,14 @@ function Home() {
               onClick={generateCommandQuestion}
               disabled={loading}
               style={{
-                width: '100%',
-                padding: '0.25rem',
+                width: isMobile ? '95%' : '100%',
+                padding: isMobile ? '0.25rem 0.5rem' : '0.25rem',
                 borderRadius: '3px',
                 border: 'none',
                 backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
                 color: '#ffffff',
                 cursor: loading ? 'wait' : 'pointer',
-                fontSize: '0.9rem',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
               }}
             >
               Study Commands
