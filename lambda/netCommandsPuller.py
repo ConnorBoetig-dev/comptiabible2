@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+import random
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
 
@@ -18,33 +19,60 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 def lambda_handler(event, context):
-    try:
-        question_type = event['queryStringParameters']['question-type']
-    except (TypeError, KeyError):
+    # CORS headers
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "OPTIONS,GET"
+    }
+
+    # Handle OPTIONS request for CORS preflight
+    if event.get("httpMethod") == "OPTIONS":
         return {
-            'statusCode': 400,
-            'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Missing or invalid query parameter: question-type'})
+            "statusCode": 200,
+            "headers": headers,
+            "body": ""
         }
 
     try:
+        # Get parameters from query string
+        params = event.get('queryStringParameters', {}) or {}
+        question_type = params.get('question-type')
+        count = int(params.get('count', 1))  # Default to 1 question
+
+        if not question_type:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'error': 'Missing required parameter: question-type'})
+            }
+
+        # Query the table
         response = table.query(
             KeyConditionExpression=Key('question-type').eq(question_type)
         )
         items = response.get('Items', [])
 
+        if not items:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'body': json.dumps({'error': 'No questions found for the specified type'})
+            }
+
+        # Randomly select requested number of questions
+        selected_items = random.sample(items, min(count, len(items)))
+
         return {
             'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps(items, cls=DecimalEncoder)
+            'headers': headers,
+            'body': json.dumps(selected_items, cls=DecimalEncoder)
         }
 
     except Exception as e:
         return {
             'statusCode': 500,
-            'headers': {'Access-Control-Allow-Origin': '*'},
+            'headers': headers,
             'body': json.dumps({'error': str(e)})
         }

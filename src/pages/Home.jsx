@@ -29,6 +29,9 @@ function Home() {
   const [selectedCommandQuestionType, setSelectedCommandQuestionType] = useState('scenario_based');
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const NET_COMMANDS_API_URL = 'https://72btwlt62f.execute-api.us-east-2.amazonaws.com/prod';
+  const [selectedNetCommandQuestionType, setSelectedNetCommandQuestionType] = useState('scenario_based');
+  const [isNetCommandsMode, setIsNetCommandsMode] = useState(false);
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -312,6 +315,58 @@ function Home() {
     } catch (error) {
       console.error('Error fetching command question:', error);
       alert('Failed to fetch command question');
+      setQuestions(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateNetCommandQuestion = async () => {
+    if (isMobile) {
+      setIsQuestionModalOpen(true);
+    }
+    try {
+      setLoading(true);
+      setSelectedAnswer(null);
+      setIsAnswerChecked(false);
+      setIsNetCommandsMode(true);
+      navigate('/', { state: { examResults: null } });
+      setChatHistory([
+        {
+          role: 'assistant',
+          content: "Ask me any questions about Network+ commands!"
+        }
+      ]);
+
+      const queryParams = new URLSearchParams({
+        'question-type': selectedNetCommandQuestionType
+      }).toString();
+
+      const response = await fetch(`${NET_COMMANDS_API_URL}?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Network Commands API Response:', data);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error('No question returned from API');
+      }
+
+      setQuestions([data[0]]);
+
+    } catch (error) {
+      console.error('Error fetching network command question:', error);
+      alert('Failed to fetch network command question');
       setQuestions(null);
     } finally {
       setLoading(false);
@@ -993,6 +1048,50 @@ function Home() {
               }}
             >
               Study Commands
+            </button>
+          </section>
+
+          {/* Network Commands Study section */}
+          <section className="network-commands-study" style={{ 
+            marginTop: '1rem', 
+            paddingTop: '1rem', 
+            borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` 
+          }}>
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Master Commands from Network+</h2>
+            
+            <select
+              value={selectedNetCommandQuestionType}
+              onChange={(e) => setSelectedNetCommandQuestionType(e.target.value)}
+              style={{
+                width: '100%',
+                marginBottom: '1rem',
+                padding: '0.25rem',
+                borderRadius: '3px',
+                border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+                color: isDarkMode ? '#ffffff' : '#000000',
+              }}
+            >
+              {Object.entries(COMMAND_QUESTION_TYPES).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+            
+            <button
+              onClick={generateNetCommandQuestion}
+              disabled={loading}
+              style={{
+                width: isMobile ? '95%' : '100%',
+                padding: isMobile ? '0.25rem 0.5rem' : '0.25rem',
+                borderRadius: '3px',
+                border: 'none',
+                backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+                color: '#ffffff',
+                cursor: loading ? 'wait' : 'pointer',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
+              }}
+            >
+              Study Network+ Commands
             </button>
           </section>
         </aside>
