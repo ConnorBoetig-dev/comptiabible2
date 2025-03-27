@@ -788,6 +788,7 @@ function Home() {
         flex: 1,
         width: '100%',
         overflow: 'auto',
+        overflowX: 'hidden',
       }}>
         <aside style={{
           width: window.innerWidth <= 768 ? '100%' : '250px',
@@ -1060,6 +1061,7 @@ function Home() {
             flex: 1,
             backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
             overflow: 'auto',
+            overflowX: 'hidden',
             padding: '1rem',
             marginRight: window.innerWidth <= 768 ? 0 : (isSidebarCollapsed ? '50px' : '250px'),
             transition: 'margin-right 0.3s ease',
