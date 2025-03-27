@@ -908,13 +908,13 @@ function Home() {
             </button>
           </section>
 
-          {/* Add new Ports Study section */}
+          {/* Ports Study section */}
           <section className="ports-study" style={{ 
             marginTop: '1rem', 
             paddingTop: '1rem', 
             borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` 
           }}>
-            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Ports Study</h2>
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Master Ports</h2>
             
             <select
               value={selectedQuestionType}
@@ -952,13 +952,13 @@ function Home() {
             </button>
           </section>
 
-          {/* Add Command Study section */}
+          {/* Command Study section */}
           <section className="commands-study" style={{ 
             marginTop: '1rem', 
             paddingTop: '1rem', 
             borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` 
           }}>
-            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Command Study A+ 1102</h2>
+            <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Master Commands from A+</h2>
             
             <select
               value={selectedCommandQuestionType}
@@ -1167,7 +1167,7 @@ function Home() {
         borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
         textAlign: 'center',
       }}>
-        <p style={{ margin: 0, fontSize: '0.8rem' }}>© 2024 TheCompTIABible. All rights reserved.</p>
+        <p style={{ margin: 0, fontSize: '0.8rem' }}>© 2025 BigMoneyBoetig (BMB) Inc. All rights reserved.</p>
       </footer>
     </div>
   );
