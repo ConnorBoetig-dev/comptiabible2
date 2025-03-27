@@ -20,7 +20,7 @@ function Home() {
   const [chatHistory, setChatHistory] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod';
+  const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod2';
   const [isPortsMode, setIsPortsMode] = useState(false);
   const PORTS_API_URL = 'https://aa8ph8je38.execute-api.us-east-2.amazonaws.com/prod/questions';
   const [selectedQuestionType, setSelectedQuestionType] = useState('identify_protocol_from_number');
@@ -95,85 +95,36 @@ function Home() {
   };
 
   const generateSingleQuestion = async () => {
-    if (isMobile) {
-      setIsQuestionModalOpen(true);
-    }
-    setIsPortsMode(false);
     try {
       setLoading(true);
-      setSelectedAnswer(null);
-      setIsAnswerChecked(false);
-      navigate('/', { state: { examResults: null } });
-      setChatHistory([]); 
-
       const params = {
         exam: selectedExam,
         domain: selectedDomain,
         count: 1
       };
       const queryString = new URLSearchParams(params).toString();
-      const fullUrl = `${API_BASE_URL}?${queryString}`;
-      console.log('Fetching from URL:', fullUrl);
-
-      const response = await fetch(fullUrl, {
+      
+      const response = await fetch(`${API_BASE_URL}?${queryString}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         mode: 'cors',
+        credentials: 'omit'  // Must be omit when using "*" for CORS
       });
-      
-      // Log the raw response
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers));
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error Response:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const data = await response.json();
-      console.log('API Response data:', data);
-
-      if (!Array.isArray(data)) {
-        throw new Error('Expected array response from API');
-      }
-
-      if (data.length === 0) {
-        throw new Error('No questions returned from API');
-      }
-
-      setQuestions(data);
-
-      if (!import.meta.env.VITE_OPENAI_API_KEY) {
-        throw new Error('OpenAI API key is not configured');
-      }
-
-      const question = data[0];
       
-      // Add this check
-      console.log('Question data:', {
-        text: question['question-text'],
-        optionA: question['option-a'],
-        optionB: question['option-b'],
-        optionC: question['option-c'],
-        optionD: question['option-d']
-      });
-
-      // Initialize chat history with the question and its options
-      setChatHistory([
-        {
-          role: 'assistant',
-          content: "Ask me 'Hows that wrong?!' or any other questions about the problem you answered!"
-        }
-      ]);
-
+      const data = await response.json();
+      console.log('Received data:', data);  // Add this for debugging
+      setQuestions(data);
+      
     } catch (error) {
-      console.error('Full error:', error);
-      alert(`Failed to fetch question: ${error.message}`);
-      setQuestions(null);
+      console.error('Full error details:', error);
+      alert('Failed to fetch question');
     } finally {
       setLoading(false);
     }

@@ -11,18 +11,13 @@ def decimal_default(obj):
     raise TypeError
 
 def lambda_handler(event, context):
-    """
-    Supports both:
-    - Console test event (raw dict)
-    - API Gateway GET request with queryStringParameters
-    """
-    
-    # CORS headers
+    # Simple CORS headers that allow all origins
     headers = {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",  # Allow all origins
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "OPTIONS,GET"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+        "Access-Control-Allow-Credentials": "false"  # Must be false when using "*"
     }
 
     # Handle OPTIONS request for CORS preflight
