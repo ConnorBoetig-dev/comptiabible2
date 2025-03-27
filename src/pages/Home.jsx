@@ -460,15 +460,15 @@ function Home() {
   };
 
   const AIChatSection = ({ currentQuestion, selectedAnswer }) => {
-    const inputRef = useRef(null);
+    const [localChatMessage, setLocalChatMessage] = useState('');
     
     const handleSubmit = async (e) => {
       e.preventDefault();
-      if (!chatMessage.trim()) return;
+      if (!localChatMessage.trim()) return;
       
       setIsChatLoading(true);
-      const userMessage = chatMessage;
-      setChatMessage('');
+      const userMessage = localChatMessage;
+      setLocalChatMessage('');
       setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
       
       try {
@@ -479,7 +479,7 @@ function Home() {
             'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo",
+            model: "gpt-3.5-turbo",  // Using the standard GPT-3.5 Turbo model
             messages: [
               {
                 role: "system",
@@ -497,9 +497,16 @@ function Home() {
                 role: "user",
                 content: userMessage
               }
-            ]
+            ],
+            temperature: 0.7,
+            max_tokens: 150
           })
         });
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorData}`);
+        }
 
         const data = await response.json();
         setChatHistory(prev => [...prev, { 
@@ -510,153 +517,80 @@ function Home() {
         console.error('Chat error:', error);
         setChatHistory(prev => [...prev, { 
           role: 'assistant', 
-          content: 'Sorry, I encountered an error. Please try again.' 
+          content: `Error: ${error.message}. Please try again.` 
         }]);
       } finally {
         setIsChatLoading(false);
-        // Remove the auto-focus after submission
       }
     };
 
     const handleInputChange = (e) => {
-      setChatMessage(e.target.value);
-      // Remove the auto-focus on input change
+      setLocalChatMessage(e.target.value);
     };
-    
-    // Re-focus the input whenever chatMessage changes
-    useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, [chatMessage]);
 
     return (
-      <div className="chat-section">
-        <h4>Need further clarification? Ask AI.</h4>
+      <div className="chat-section" style={{ marginTop: '20px' }}>
+        <h4 style={{ marginBottom: '10px' }}>Need further clarification? Ask AI.</h4>
         
-        <div className="chat-messages">
+        <div className="chat-messages" style={{ 
+          maxHeight: '200px',
+          overflowY: 'auto',
+          marginBottom: '10px'
+        }}>
           {chatHistory.map((msg, idx) => (
             <div 
               key={idx} 
-              className={`chat-message ${msg.role}`}
-              style={{ whiteSpace: 'pre-line' }}
+              style={{
+                padding: '8px',
+                marginBottom: '8px',
+                backgroundColor: msg.role === 'assistant' ? (isDarkMode ? '#363636' : '#f0f0f0') : 'transparent',
+                borderRadius: '4px'
+              }}
             >
               {msg.content}
             </div>
           ))}
-          {isChatLoading && <div className="chat-loading">AI is thinking...</div>}
+          {isChatLoading && <div style={{ padding: '8px' }}>AI is thinking...</div>}
         </div>
 
-        <form onSubmit={handleSubmit} className="chat-form" style={{
+        <form onSubmit={handleSubmit} style={{
           display: 'flex',
           gap: '8px',
-          padding: isMobile ? '8px' : '16px',
+          position: 'relative'
         }}>
           <input
             type="text"
-            value={chatMessage}
+            value={localChatMessage}
             onChange={handleInputChange}
             placeholder="Type your question here..."
             style={{
-              padding: '0.75rem',
+              padding: '12px',
               borderRadius: '4px',
-              flex: 1,
-              minWidth: 0, // Important for flex sizing
-              backgroundColor: isDarkMode ? '#363636' : '#ffffff',
+              border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+              backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
               color: isDarkMode ? '#ffffff' : '#000000',
+              width: '100%',
+              fontSize: '14px'
             }}
-            autoComplete="off"
           />
           <button 
             type="submit" 
-            disabled={isChatLoading || !chatMessage.trim()}
+            disabled={isChatLoading || !localChatMessage.trim()}
             style={{
-              padding: isMobile ? '0.5rem 1rem' : '0.75rem 1.5rem',
+              padding: '12px 24px',
               borderRadius: '4px',
               border: 'none',
               backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
               color: '#ffffff',
+              cursor: !localChatMessage.trim() ? 'not-allowed' : 'pointer',
+              opacity: !localChatMessage.trim() ? 0.7 : 1,
               whiteSpace: 'nowrap',
-              cursor: !chatMessage.trim() ? 'not-allowed' : 'pointer',
-              opacity: !chatMessage.trim() ? 0.7 : 1,
+              minWidth: '80px'
             }}
           >
             Send
           </button>
         </form>
-
-        <style>
-          {`
-            .chat-section {
-              margin-top: 2rem;
-              padding: 1rem;
-              border: 1px solid ${isDarkMode ? '#404040' : '#ddd'};
-              border-radius: 8px;
-              background-color: ${isDarkMode ? '#2d2d2d' : 'white'};
-              color: ${isDarkMode ? '#ffffff' : '#000000'};
-            }
-
-            .chat-messages {
-              max-height: 200px;
-              overflow-y: auto;
-              margin-bottom: 1rem;
-              padding: 0.5rem;
-            }
-
-            .chat-message {
-              margin-bottom: 0.5rem;
-              padding: 0.5rem;
-              border-radius: 4px;
-            }
-
-            .chat-message.user {
-              background-color: ${isDarkMode ? '#363636' : '#f5f5f5'};
-              color: ${isDarkMode ? '#999999' : '#666666'}; /* Lighter color for user messages */
-            }
-
-            .chat-message.assistant {
-              color: ${isDarkMode ? '#ffffff' : '#000000'}; /* Keep AI responses bright */
-            }
-
-            .chat-loading {
-              font-style: italic;
-              color: ${isDarkMode ? '#999' : '#666'};
-            }
-
-            .chat-form {
-              display: flex;
-              gap: 0.5rem;
-            }
-
-            .chat-input {
-              flex: 1;
-              padding: 0.5rem;
-              border-radius: 4px;
-              border: 1px solid ${isDarkMode ? '#404040' : '#ddd'};
-              background-color: ${isDarkMode ? '#363636' : 'white'};
-              color: ${isDarkMode ? '#ffffff' : '#000000'};
-            }
-
-            .chat-input:focus {
-              outline: none;
-              border-color: ${isDarkMode ? '#0066cc' : '#007bff'};
-            }
-
-            .chat-submit {
-              padding: 0.5rem 1rem;
-              border-radius: 4px;
-              border: none;
-              background-color: ${isDarkMode ? '#0066cc' : '#007bff'};
-              color: #ffffff;
-              cursor: pointer;
-            }
-
-            .chat-submit:disabled {
-              opacity: 0.7;
-              cursor: not-allowed;
-            }
-          `}
-        </style>
       </div>
     );
   };
