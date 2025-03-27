@@ -26,25 +26,23 @@ body {
 
 /* Remove or comment out any other styling that might affect layout */
 
-/* Add these responsive styles */
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
+/* Add these styles for chat section */
+.chat-section {
+  position: relative;
+}
 
+.chat-messages {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
   .chat-section {
     margin-top: 1rem !important;
     padding: 0.5rem !important;
   }
 
   .chat-messages {
-    min-height: 150px;
-    transition: height 0.3s ease;
-  }
-
-  .chat-message {
-    padding: 0.25rem !important;
-    margin-bottom: 0.25rem !important;
+    height: 300px !important; /* Force consistent height on mobile */
   }
 }
 

@@ -331,10 +331,12 @@ function Home() {
       setIsAnswerChecked(true);
       // Add small delay to ensure explanation is rendered before scrolling
       setTimeout(() => {
-        explanationRef.current?.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'center'
-        });
+        if (window.innerWidth <= 768) { // Only scroll on mobile
+          explanationRef.current?.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
       }, 100);
     };
 
@@ -468,38 +470,29 @@ function Home() {
   };
 
   const AIChatSection = ({ currentQuestion, selectedAnswer }) => {
+    const { isDarkMode } = useTheme();
     const [localChatMessage, setLocalChatMessage] = useState('');
+    const [isChatLoading, setIsChatLoading] = useState(false);
+    const [chatHistory, setChatHistory] = useState([]);
     const chatInputRef = useRef(null);
     const chatMessagesRef = useRef(null);
+    const [isMobile] = useState(window.innerWidth <= 768);
+    const fixedChatHeight = isMobile ? '300px' : '200px';
 
-    // Function to scroll to chat input
-    const scrollToChatInput = () => {
-      chatInputRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'center'
-      });
-    };
-
-    // Add focus and click handlers for the input
-    const handleInputFocus = () => {
-      scrollToChatInput();
-    };
-
-    // Add this function to handle auto-scrolling
-    const scrollToBottom = () => {
+    const scrollChatToBottom = () => {
       if (chatMessagesRef.current) {
         chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
       }
-      // Add this to scroll the entire page to the input
-      if (isMobile) {
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
     };
 
-    // Modify the handleSubmit function to include auto-scroll
+    const handleInputFocus = () => {
+      // Optional: Add any focus handling logic here
+    };
+
+    const handleInputChange = (e) => {
+      setLocalChatMessage(e.target.value);
+    };
+
     const handleSubmit = async (e) => {
       e.preventDefault();
       if (!localChatMessage.trim()) return;
@@ -508,10 +501,17 @@ function Home() {
       const userMessage = localChatMessage;
       setLocalChatMessage('');
       setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
-      // Scroll after user message
-      setTimeout(scrollToBottom, 100);
 
       try {
+        // Create context about the current question and answer
+        const questionContext = `Question: ${currentQuestion['question-text']}\n` +
+          `Options:\nA) ${currentQuestion['option-a']}\n` +
+          `B) ${currentQuestion['option-b']}\n` +
+          `C) ${currentQuestion['option-c']}\n` +
+          `D) ${currentQuestion['option-d']}\n` +
+          `User selected: ${selectedAnswer || 'No answer yet'}\n` +
+          `Correct answer: ${currentQuestion['correct answer']}\n`;
+
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -519,15 +519,11 @@ function Home() {
             'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo",  // Using the standard GPT-3.5 Turbo model
+            model: "gpt-3.5-turbo",
             messages: [
               {
                 role: "system",
-                content: `You are a CompTIA exam tutor. The current question is: ${currentQuestion['question-text']}. 
-                         The user selected answer ${selectedAnswer || 'none'}: ${selectedAnswer ? currentQuestion[`option-${selectedAnswer.toLowerCase()}`] : 'No answer selected'}.
-                         The correct answer is ${currentQuestion['correct answer']}: ${currentQuestion[`option-${currentQuestion['correct answer'].toLowerCase()}`]}.
-                         The explanation is: ${currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`]}
-                         When the user asks why something is wrong, refer to their selected answer and explain why it's incorrect and why the correct answer is better.`
+                content: "You are a helpful AI tutor. Use the following question context to help the user understand the topic better: " + questionContext
               },
               ...chatHistory.map(msg => ({
                 role: msg.role,
@@ -544,8 +540,7 @@ function Home() {
         });
 
         if (!response.ok) {
-          const errorData = await response.text();
-          throw new Error(`API Error: ${response.status} - ${errorData}`);
+          throw new Error(`API Error: ${response.status}`);
         }
 
         const data = await response.json();
@@ -553,37 +548,22 @@ function Home() {
           role: 'assistant', 
           content: data.choices[0].message.content 
         }]);
-        // Scroll after AI response with a slight delay
-        setTimeout(scrollToBottom, 100);
+        scrollChatToBottom();
       } catch (error) {
         console.error('Chat error:', error);
         setChatHistory(prev => [...prev, { 
           role: 'assistant', 
           content: `Error: ${error.message}. Please try again.` 
         }]);
-        setTimeout(scrollToBottom, 100);
+        scrollChatToBottom();
       } finally {
         setIsChatLoading(false);
-        // Add one final scroll to ensure we're at the bottom
-        setTimeout(scrollToBottom, 200);
       }
     };
 
-    // Add useEffect to scroll when chat history changes
     useEffect(() => {
-      if (chatHistory.length > 0) {
-        setTimeout(scrollToBottom, 100);
-      }
+      scrollChatToBottom();
     }, [chatHistory]);
-
-    const handleInputChange = (e) => {
-      setLocalChatMessage(e.target.value);
-    };
-
-    // Calculate dynamic height based on chat history
-    const chatHeight = isMobile ? 
-      Math.min(chatHistory.length * 80 + 100, window.innerHeight * 0.6) : // On mobile: 80px per message + padding, max 60% of viewport
-      200; // Desktop: fixed height
 
     return (
       <div className="chat-section" style={{ 
@@ -598,17 +578,12 @@ function Home() {
           ref={chatMessagesRef}
           className="chat-messages" 
           style={{ 
-            height: chatHeight,
-            maxHeight: isMobile ? `${chatHeight}px` : '200px',
+            height: fixedChatHeight,
             overflowY: 'auto',
             marginBottom: '10px',
             border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
             borderRadius: '4px',
-            padding: '10px',
-            scrollbarWidth: 'thin',
-            scrollbarColor: isDarkMode ? '#666 #2d2d2d' : '#999 #f0f0f0',
-            paddingRight: '10px',
-            transition: 'height 0.3s ease', // Smooth height transition
+            padding: '10px'
           }}
         >
           {chatHistory.map((msg, idx) => (
@@ -620,7 +595,7 @@ function Home() {
                 backgroundColor: msg.role === 'assistant' ? 
                   (isDarkMode ? '#363636' : '#f0f0f0') : 'transparent',
                 borderRadius: '4px',
-                wordBreak: 'break-word' // Ensure long words don't overflow
+                wordBreak: 'break-word'
               }}
             >
               {msg.content}
@@ -629,18 +604,19 @@ function Home() {
           {isChatLoading && <div style={{ padding: '8px' }}>AI is thinking...</div>}
         </div>
 
-        <form onSubmit={handleSubmit} style={{
-          display: 'flex',
-          gap: '8px',
-          position: 'relative'
-        }}>
+        <form 
+          onSubmit={handleSubmit} 
+          style={{
+            display: 'flex',
+            gap: '8px',
+            position: 'relative'
+          }}
+        >
           <input
             ref={chatInputRef}
             type="text"
             value={localChatMessage}
             onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            onClick={handleInputFocus}
             placeholder="Type your question here..."
             style={{
               padding: '12px',
@@ -649,8 +625,7 @@ function Home() {
               backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
               color: isDarkMode ? '#ffffff' : '#000000',
               width: '100%',
-              fontSize: '16px',  // Changed from 14px to 16px to prevent zoom
-              '-webkit-text-size-adjust': '100%',  // Add this
+              fontSize: '16px'
             }}
           />
           <button 

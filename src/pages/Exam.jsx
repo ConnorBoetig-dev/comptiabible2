@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -11,6 +11,8 @@ function Exam() {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const explanationRef = useRef(null);
   
   // Get questions from navigation state
   const questions = location.state?.questions || [];
@@ -73,6 +75,19 @@ function Exam() {
       return answer === questions[index]['correct answer'];
     }).length;
     return (correct / questions.length) * 100;
+  };
+
+  const handleCheckAnswer = () => {
+    setShowExplanation(true);
+    // Add small delay to ensure explanation is rendered before scrolling
+    setTimeout(() => {
+      if (window.innerWidth <= 768) { // Only scroll on mobile
+        explanationRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -170,6 +185,21 @@ function Exam() {
             </>
           )}
         </div>
+
+        {showExplanation && (
+          <div 
+            ref={explanationRef}
+            style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: isDarkMode ? '#363636' : '#f5f5f5',
+              borderRadius: '4px',
+            }}
+          >
+            <strong>Explanation:</strong><br/>
+            {currentQuestion[`explanation-${currentQuestion['correct answer'].toLowerCase()}`]}
+          </div>
+        )}
 
         {/* Navigation */}
         <div style={{
