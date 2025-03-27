@@ -32,6 +32,20 @@ html, body {
 @media (max-width: 768px) {
   html, body, #root {
     touch-action: pan-y pinch-zoom;
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+
+  .app-container {
+    min-height: 100vh !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+
+  aside {
+    position: relative !important;
+    overflow-y: visible !important;
   }
 }
 
