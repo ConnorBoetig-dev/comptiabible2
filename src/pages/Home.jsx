@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ExamReview from '../components/ExamReview';
+import { getSignInUrl } from '../config/auth';
 
 function Home() {
   const { isDarkMode } = useTheme();
@@ -784,8 +785,27 @@ function Home() {
         padding: '0.5rem 1rem',
         backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
         borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
       }}>
         <h1 style={{ margin: 0, fontSize: '1.2rem' }}>TheCompTIABible</h1>
+        
+        <button
+          onClick={() => window.location.href = getSignInUrl()}
+          style={{
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: 'none',
+            backgroundColor: isDarkMode ? '#0066cc' : '#007bff',
+            color: '#ffffff',
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+            transition: 'background-color 0.2s ease',
+          }}
+        >
+          Sign In
+        </button>
       </header>
 
       <main style={{
