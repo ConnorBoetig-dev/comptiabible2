@@ -579,7 +579,21 @@ function Home() {
         flexDirection: 'column',
         gap: '10px'
       }}>
-        <h4 style={{ marginBottom: '10px' }}>Need further clarification? Ask AI.</h4>
+        <h4 style={{ 
+          marginBottom: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span style={{ textDecoration: 'underline' }}>Need further clarification? Ask AI.</span>
+          <span style={{ 
+            color: isDarkMode ? '#999' : '#666',
+            fontWeight: 'normal',
+            fontSize: '0.9em'
+          }}>
+            "How is that wrong?" "I don't get the question.."
+          </span>
+        </h4>
         
         <div 
           ref={chatMessagesRef}
@@ -1239,7 +1253,7 @@ function Home() {
         borderTop: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
         textAlign: 'center',
       }}>
-        <p style={{ margin: 0, fontSize: '0.8rem' }}>© 2025 BigMoneyBoetig (BMB) Inc. All rights reserved.</p>
+        <p style={{ margin: 0, fontSize: '0.8rem' }}>© 2025 TheCompTIABible (personal project). All rights reserved.</p>
       </footer>
     </div>
   );
