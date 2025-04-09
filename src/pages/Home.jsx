@@ -725,53 +725,188 @@ If you have any feedback, please reach out.`}</div>
 
   const ResourceAccordion = ({ isDarkMode }) => {
     const [openSections, setOpenSections] = useState({});
+    const [openDomains, setOpenDomains] = useState({});
 
     const toggleSection = (section) => {
-      setOpenSections(prev => {
-        const newState = {...prev};
-        // Close all other sections first
-        Object.keys(newState).forEach(key => {
-          newState[key] = false;
-        });
-        // Toggle the clicked section
-        newState[section] = !prev[section];
-        return newState;
-      });
+      setOpenSections(prev => ({
+        ...prev,
+        [section]: !prev[section]
+      }));
+    };
+
+    const toggleDomain = (domain) => {
+      setOpenDomains(prev => ({
+        ...prev,
+        [domain]: !prev[domain]
+      }));
     };
 
     const resources = {
-      'A+ 1101': [
-        { title: 'Hardware Components', url: '#hardware' },
-        { title: 'Mobile Devices', url: '#mobile' },
-        { title: 'Networking', url: '#networking' },
-        { title: 'Virtualization', url: '#virtualization' },
-      ],
-      'A+ 1102': [
-        { title: 'Operating Systems', url: '#os' },
-        { title: 'Security', url: '#security' },
-        { title: 'Software', url: '#software' },
-        { title: 'Operational Procedures', url: '#procedures' },
-      ],
-      'Network+': [
-        { title: 'Network Architecture', url: '#net-arch' },
-        { title: 'Network Operations', url: '#net-ops' },
-        { title: 'Network Security', url: '#net-security' },
-        { title: 'Troubleshooting', url: '#troubleshooting' },
-      ],
-      'Security+': [
-        { title: 'Attacks & Threats', url: '#attacks' },
-        { title: 'Architecture & Design', url: '#arch-design' },
-        { title: 'Implementation', url: '#implementation' },
-        { title: 'Operations', url: '#operations' },
-      ],
+      'A+ 1101': {
+        'Domain 1: Mobile Devices': [
+          '1.1 Given a scenario, install and configure laptop hardware components',
+          '1.2 Compare and contrast the display components of mobile devices',
+          '1.3 Given a scenario, configure accessories and ports of mobile devices',
+          '1.4 Given a scenario, configure basic mobile device network connectivity'
+        ],
+        'Domain 2: Networking': [
+          '2.1 Compare and contrast TCP and UDP ports, protocols, and their purposes',
+          '2.2 Compare and contrast common networking hardware devices',
+          '2.3 Given a scenario, install and configure basic wired/wireless networks',
+          '2.4 Compare and contrast wireless networking protocols',
+          '2.5 Summarize services provided by networked hosts',
+          '2.6 Explain common network configuration concepts',
+          '2.7 Compare and contrast Internet connection types and features',
+          '2.8 Given a scenario, use networking tools'
+        ],
+        'Domain 3: Hardware': [
+          '3.1 Explain basic cable types and their connectors, features, and purposes',
+          '3.2 Given a scenario, install RAM types',
+          '3.3 Given a scenario, select and install storage devices',
+          '3.4 Given a scenario, install and configure motherboards, CPUs, and add-on cards',
+          '3.5 Given a scenario, install or replace the power supply',
+          '3.6 Given a scenario, deploy and configure multifunction devices',
+          '3.7 Given a scenario, install and replace printer consumables'
+        ],
+        'Domain 4: Virtualization and Cloud Computing': [
+          '4.1 Compare and contrast cloud computing concepts',
+          '4.2 Given a scenario, implement basic virtualization'
+        ],
+        'Domain 5: Hardware and Network Troubleshooting': [
+          '5.1 Given a scenario, use the best practice methodology to resolve problems',
+          '5.2 Given a scenario, troubleshoot problems related to motherboards, RAM, CPU, and power',
+          '5.3 Given a scenario, troubleshoot hard drives and RAID arrays',
+          '5.4 Given a scenario, troubleshoot video, projector, and display issues',
+          '5.5 Given a scenario, troubleshoot common mobile device issues',
+          '5.6 Given a scenario, troubleshoot printers',
+          '5.7 Given a scenario, troubleshoot common wired and wireless network problems'
+        ]
+      },
+      'A+ 1102': {
+        'Domain 1: Operating Systems': [
+          '1.1 Compare and contrast common operating system types and their purposes',
+          '1.2 Compare and contrast features of Microsoft Windows versions',
+          '1.3 Summarize general OS installation considerations and upgrade methods',
+          '1.4 Given a scenario, use appropriate Microsoft command-line tools',
+          '1.5 Given a scenario, use Microsoft operating system features and tools',
+          '1.6 Given a scenario, use Microsoft Windows Control Panel utilities',
+          '1.7 Given a scenario, configure Microsoft Windows networking',
+          '1.8 Given a scenario, configure client-side virtualization',
+          '1.9 Given a scenario, troubleshoot common OS issues',
+          '1.10 Given a scenario, resolve common mobile OS and application issues',
+          '1.11 Given a scenario, configure basic mobile device network connectivity'
+        ],
+        'Domain 2: Security': [
+          '2.1 Summarize the importance of physical security measures',
+          '2.2 Explain logical security concepts',
+          '2.3 Compare and contrast wireless security protocols and authentication methods',
+          '2.4 Given a scenario, detect, remove, and prevent malware',
+          '2.5 Given a scenario, implement security best practices',
+          '2.6 Given a scenario, implement appropriate data destruction and disposal methods',
+          '2.7 Given a scenario, configure security on SOHO wireless and wired networks',
+          '2.8 Given a scenario, use common safety procedures',
+          '2.9 Given a scenario, use appropriate data destruction methods',
+          '2.10 Given a scenario, configure security on client mobile devices'
+        ],
+        'Domain 3: Software Troubleshooting': [
+          '3.1 Given a scenario, troubleshoot Microsoft Windows OS problems',
+          '3.2 Given a scenario, troubleshoot and resolve PC security issues',
+          '3.3 Given a scenario, use best practice procedures for malware removal',
+          '3.4 Given a scenario, troubleshoot mobile OS and application issues',
+          '3.5 Given a scenario, troubleshoot mobile OS and application security issues'
+        ],
+        'Domain 4: Operational Procedures': [
+          '4.1 Compare and contrast best practices associated with types of documentation',
+          '4.2 Given a scenario, implement basic change management best practices',
+          '4.3 Given a scenario, implement basic disaster prevention and recovery methods',
+          '4.4 Explain common safety procedures',
+          '4.5 Explain environmental impacts and appropriate controls',
+          '4.6 Explain the importance of prohibited content/activity and privacy, licensing, and policy concepts',
+          '4.7 Given a scenario, use proper communication techniques and professionalism',
+          '4.8 Identify the basics of scripting',
+          '4.9 Given a scenario, use remote access technologies'
+        ]
+      },
+      'Network+': {
+        'Domain 1: Networking Concepts': [
+          '1.1 Explain the purposes and uses of ports and protocols',
+          '1.2 Explain devices, applications, protocols and services at their appropriate OSI layers',
+          '1.3 Explain the concepts and characteristics of routing and switching',
+          '1.4 Given a scenario, configure the appropriate IP addressing components',
+          '1.5 Compare and contrast the characteristics of network topologies, types and technologies',
+          '1.6 Given a scenario, implement the appropriate wireless technologies and configurations',
+          '1.7 Summarize cloud concepts and their purposes',
+          '1.8 Explain the functions of network services'
+        ],
+        'Domain 2: Network Implementations': [
+          '2.1 Given a scenario, deploy the appropriate cabling solution',
+          '2.2 Given a scenario, determine the appropriate placement of networking devices on a network and install/configure them',
+          '2.3 Given a scenario, configure and deploy common Ethernet switching features',
+          '2.4 Given a scenario, implement the appropriate wireless standards and technologies'
+        ],
+        'Domain 3: Network Operations': [
+          '3.1 Given a scenario, use appropriate documentation and diagrams to manage the network',
+          '3.2 Compare and contrast business continuity and disaster recovery concepts',
+          '3.3 Explain common scanning, monitoring and patching processes and summarize their expected outputs',
+          '3.4 Given a scenario, use remote access methods',
+          '3.5 Identify policies and best practices'
+        ],
+        'Domain 4: Network Security': [
+          '4.1 Summarize the purposes of physical security devices',
+          '4.2 Explain authentication and access controls',
+          '4.3 Given a scenario, secure a basic wireless network'
+        ],
+        'Domain 5: Network Troubleshooting': [
+          '5.1 Explain the network troubleshooting methodology',
+          '5.2 Given a scenario, troubleshoot common cable connectivity issues and select the appropriate tools',
+          '5.3 Given a scenario, use appropriate network software tools and commands',
+          '5.4 Given a scenario, troubleshoot common wireless connectivity issues',
+          '5.5 Given a scenario, troubleshoot general networking issues'
+        ]
+      },
+      'Security+': {
+        'Domain 1: Attacks, Threats, and Vulnerabilities': [
+          '1.1 Compare and contrast different types of social engineering techniques',
+          '1.2 Given a scenario, analyze potential indicators to determine the type of attack',
+          '1.3 Given a scenario, analyze potential indicators associated with application attacks',
+          '1.4 Given a scenario, analyze potential indicators associated with network attacks'
+        ],
+        'Domain 2: Architecture and Design': [
+          '2.1 Explain the importance of security concepts in an enterprise environment',
+          '2.2 Summarize virtualization and cloud computing concepts',
+          '2.3 Summarize secure application development and deployment concepts',
+          '2.4 Summarize authentication and authorization design concepts',
+          '2.5 Given a scenario, implement cybersecurity resilience'
+        ],
+        'Domain 3: Implementation': [
+          '3.1 Given a scenario, implement secure protocols',
+          '3.2 Given a scenario, implement host or application security solutions',
+          '3.3 Given a scenario, implement secure network designs',
+          '3.4 Given a scenario, install and configure wireless security settings'
+        ],
+        'Domain 4: Operations and Incident Response': [
+          '4.1 Given a scenario, use the appropriate tool to assess organizational security',
+          '4.2 Summarize the importance of policies, processes, and procedures for incident response',
+          '4.3 Given an incident, utilize appropriate data sources to support an investigation',
+          '4.4 Given an incident, apply mitigation techniques or controls to secure an environment',
+          '4.5 Explain the key aspects of digital forensics'
+        ],
+        'Domain 5: Governance, Risk, and Compliance': [
+          '5.1 Compare and contrast various types of controls',
+          '5.2 Explain the importance of applicable regulations, standards, or frameworks that impact organizational security posture',
+          '5.3 Explain the importance of policies to organizational security',
+          '5.4 Summarize risk management processes and concepts',
+          '5.5 Explain privacy and sensitive data concepts'
+        ]
+      }
     };
 
     return (
       <div style={{ width: '100%' }}>
-        {Object.entries(resources).map(([section, links]) => (
-          <div key={section} style={{ marginBottom: '10px' }}>
+        {Object.entries(resources).map(([exam, domains]) => (
+          <div key={exam} style={{ marginBottom: '10px' }}>
             <div 
-              onClick={() => toggleSection(section)}
+              onClick={() => toggleSection(exam)}
               style={{
                 padding: '8px 12px',
                 backgroundColor: isDarkMode ? '#363636' : '#f0f0f0',
@@ -785,48 +920,62 @@ If you have any feedback, please reach out.`}</div>
                 border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`
               }}
             >
-              <span>{section}</span>
+              <span>{exam}</span>
               <span style={{ 
                 transition: 'transform 0.3s',
-                transform: openSections[section] ? 'rotate(180deg)' : 'rotate(0deg)',
+                transform: openSections[exam] ? 'rotate(180deg)' : 'rotate(0deg)',
                 fontSize: '12px'
               }}>▼</span>
             </div>
             
             <div style={{
               overflow: 'hidden',
-              maxHeight: openSections[section] ? '500px' : '0',
+              maxHeight: openSections[exam] ? '2000px' : '0',
               transition: 'max-height 0.3s ease-in-out',
               backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
-              border: openSections[section] ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
-              borderTop: 'none',
-              borderBottomLeftRadius: '4px',
-              borderBottomRightRadius: '4px',
             }}>
-              {links.map((link, index) => (
-                <a 
-                  key={index}
-                  href={link.url}
-                  style={{
-                    display: 'block',
-                    padding: '8px 16px',
-                    color: isDarkMode ? '#cccccc' : '#666666',
-                    textDecoration: 'none',
-                    borderBottom: index < links.length - 1 ? 
-                      `1px solid ${isDarkMode ? '#333333' : '#f0f0f0'}` : 'none',
-                    transition: 'background-color 0.2s, padding-left 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = isDarkMode ? '#363636' : '#f5f5f5';
-                    e.target.style.paddingLeft = '20px';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = 'transparent';
-                    e.target.style.paddingLeft = '16px';
-                  }}
-                >
-                  {link.title}
-                </a>
+              {Object.entries(domains).map(([domain, subDomains]) => (
+                <div key={domain} style={{ borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}` }}>
+                  <div
+                    onClick={() => toggleDomain(`${exam}-${domain}`)}
+                    style={{
+                      padding: '8px 24px',
+                      cursor: 'pointer',
+                      backgroundColor: isDarkMode ? '#2d2d2d' : '#ffffff',
+                      color: isDarkMode ? '#cccccc' : '#666666',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <span>{domain}</span>
+                    <span style={{ 
+                      transition: 'transform 0.3s',
+                      transform: openDomains[`${exam}-${domain}`] ? 'rotate(180deg)' : 'rotate(0deg)',
+                      fontSize: '12px'
+                    }}>▼</span>
+                  </div>
+                  <div style={{
+                    overflow: 'hidden',
+                    maxHeight: openDomains[`${exam}-${domain}`] ? '1000px' : '0',
+                    transition: 'max-height 0.3s ease-in-out',
+                    backgroundColor: isDarkMode ? '#262626' : '#f8f8f8',
+                  }}>
+                    {subDomains.map((subDomain, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: '8px 36px',
+                          borderTop: index === 0 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
+                          color: isDarkMode ? '#b3b3b3' : '#777777',
+                          fontSize: '0.9em',
+                        }}
+                      >
+                        {subDomain}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -1315,6 +1464,9 @@ If you have any feedback, please reach out.`}</div>
             opacity: isSidebarCollapsed ? 0 : 1,
             visibility: isSidebarCollapsed ? 'hidden' : 'visible',
             transition: 'opacity 0.2s ease, visibility 0.2s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%', // Take full height of parent
           }}>
             <h2 style={{ 
               margin: '0 0 1rem 0', 
@@ -1323,10 +1475,16 @@ If you have any feedback, please reach out.`}</div>
               color: isDarkMode ? '#ffffff' : '#000000',
               padding: '8px 0',
               borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+              flexShrink: 0, // Prevent header from shrinking
             }}>
               Resources (coming soon)
             </h2>
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div style={{ 
+              flex: 1,
+              overflowY: 'auto',
+              paddingRight: '8px', // Add some padding for the scrollbar
+              marginRight: '-8px', // Offset the padding to maintain alignment
+            }}>
               <ResourceAccordion isDarkMode={isDarkMode} />
             </div>
           </div>
