@@ -340,15 +340,40 @@ function Home() {
             marginBottom: '1.5rem',
             color: isDarkMode ? '#ffffff' : '#000000',
           }}>
-            {questions[0].content.title}
+            About TheCompTIABible
           </h1>
           <div style={{
             whiteSpace: 'pre-line',
             lineHeight: '1.6',
             fontSize: '1.1rem',
           }}>
-            {questions[0].content.description}
-          </div>
+{`Welcome to TheCompTIABible - Your best free resource for the CompTIA Trifecta.
+
+This is a personal project, it is a free study tool designed to simply provide 
+practice questions to prepare for CompTIA certifications including A+, Network+, 
+and Security+.
+
+What makes it unique? I don't want anything from you. You won't see any subscription fees, 
+ads, or any form of monetization. It's purely for everyone to use, as this material should be free.
+
+Now if my AWS and OpenAI API charges go through the roof, scratch that. Maybe very minimal ads, but nothing constraining the user. 
+
+Features:
+• Practice questions from all exam domains
+• Interactive command-line study tools
+• Network ports and protocols training
+• Dark/Light mode for comfortable studying
+
+Coming Soon: 
+• Sign in/Daily Streaks
+• Community chat 
+
+LinkedIn: `}<a href="https://www.linkedin.com/in/connor-boetig-a23678290/" target="_blank" rel="noopener noreferrer" style={{color: '#007bff', textDecoration: 'underline', cursor: 'pointer'}}>Connor Boetig</a>{`
+Email: connorboetig20@gmail.com
+
+This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
+This is my first project implementing this many services, and I am far from even an entry level developer. 
+If you have any feedback, please reach out.`}</div>
         </div>
       );
     }
@@ -859,7 +884,7 @@ function Home() {
                 • Sign in/Daily Streaks
                 • Community chat 
 
-                LinkedIn: Connor Boetig
+                LinkedIn: <a href="https://www.linkedin.com/in/connor-boetig-a23678290/" style="color: #007bff; text-decoration: underline; cursor: pointer;">Connor Boetig</a>
                 Email: connorboetig20@gmail.com
                 
                 This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
