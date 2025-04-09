@@ -326,6 +326,33 @@ function Home() {
   };
 
   const QuestionDisplay = ({ questions }) => {
+    // Add at the beginning of the component
+    if (questions[0]?.type === 'about') {
+      return (
+        <div style={{
+          padding: '2rem',
+          maxWidth: '800px',
+          margin: '0 auto',
+          color: isDarkMode ? '#ffffff' : '#000000',
+        }}>
+          <h1 style={{ 
+            fontSize: '2rem', 
+            marginBottom: '1.5rem',
+            color: isDarkMode ? '#ffffff' : '#000000',
+          }}>
+            {questions[0].content.title}
+          </h1>
+          <div style={{
+            whiteSpace: 'pre-line',
+            lineHeight: '1.6',
+            fontSize: '1.1rem',
+          }}>
+            {questions[0].content.description}
+          </div>
+        </div>
+      );
+    }
+
     // Add ref for explanation section
     const explanationRef = useRef(null);
 
@@ -806,7 +833,32 @@ function Home() {
         <h1 style={{ margin: 0, fontSize: '1.2rem' }}>TheCompTIABible</h1>
         
         <button
-          onClick={() => window.location.href = getSignInUrl()}
+          onClick={() => setQuestions([{
+            type: 'about',
+            content: {
+              title: 'About TheCompTIABible',
+              description: `
+                Welcome to TheCompTIABible - Your Ultimate CompTIA Certification Companion!
+
+                This project is a comprehensive study tool designed to help IT professionals 
+                and enthusiasts prepare for CompTIA certifications including A+, Network+, 
+                and Security+.
+
+                Features:
+                • Practice questions from all exam domains
+                • Interactive command-line study tools
+                • Network ports and protocols training
+                • Dark/Light mode for comfortable studying
+
+                [Contact Information Placeholder]
+                LinkedIn: [Your LinkedIn]
+                Email: [Your Email]
+                
+                This is a personal project created to help the IT community prepare for 
+                their certification journey.
+              `
+            }
+          }])}
           style={{
             padding: '0.5rem 1rem',
             borderRadius: '4px',
@@ -818,7 +870,7 @@ function Home() {
             transition: 'background-color 0.2s ease',
           }}
         >
-          Sign In
+          About
         </button>
       </header>
 
