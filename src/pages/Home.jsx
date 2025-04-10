@@ -756,83 +756,83 @@ function Home() {
     const resources = {
       'A+ 1101': {
         'Domain 1: Mobile Devices': [
-          '1.1 Given a scenario, install and configure laptop hardware components',
+          '1.1 Given a scenario, install and configure laptop hardware and components',
           '1.2 Compare and contrast the display components of mobile devices',
-          '1.3 Given a scenario, configure accessories and ports of mobile devices',
-          '1.4 Given a scenario, configure basic mobile device network connectivity'
+          '1.3 Given a scenario, set up and configure accessories and ports of mobile devices',
+          '1.4 Given a scenario, configure basic mobile-device network connectivity and application support'
         ],
         'Domain 2: Networking': [
-          '2.1 Compare and contrast TCP and UDP ports, protocols, and their purposes',
-          '2.2 Compare and contrast common networking hardware devices',
-          '2.3 Given a scenario, install and configure basic wired/wireless networks',
-          '2.4 Compare and contrast wireless networking protocols',
-          '2.5 Summarize services provided by networked hosts',
-          '2.6 Explain common network configuration concepts',
-          '2.7 Compare and contrast Internet connection types and features',
+          '2.1 Compare and contrast Transmission Control Protocol (TCP) and User Datagram Protocol (UDP) ports, protocols, and their purposes',
+          '2.2 Compare and contrast common networking hardware',
+          '2.3 Compare and contrast protocols for wireless networking',
+          '2.4 Summarize services provided by networked hosts',
+          '2.5 Given a scenario, install and configure basic wired/wireless small office/home office (SOHO) networks',
+          '2.6 Compare and contrast common network configuration concepts',
+          '2.7 Compare and contrast Internet connection types, network types, and their features',
           '2.8 Given a scenario, use networking tools'
         ],
         'Domain 3: Hardware': [
           '3.1 Explain basic cable types and their connectors, features, and purposes',
-          '3.2 Given a scenario, install RAM types',
+          '3.2 Given a scenario, install the appropriate RAM',
           '3.3 Given a scenario, select and install storage devices',
-          '3.4 Given a scenario, install and configure motherboards, CPUs, and add-on cards',
-          '3.5 Given a scenario, install or replace the power supply',
-          '3.6 Given a scenario, deploy and configure multifunction devices',
+          '3.4 Given a scenario, install and configure motherboards, central processing units (CPUs), and add-on cards',
+          '3.5 Given a scenario, install or replace the appropriate power supply',
+          '3.6 Given a scenario, deploy and configure multifunction devices/printers and settings',
           '3.7 Given a scenario, install and replace printer consumables'
         ],
         'Domain 4: Virtualization and Cloud Computing': [
-          '4.1 Compare and contrast cloud computing concepts',
-          '4.2 Given a scenario, implement basic virtualization'
+          '4.1 Summarize cloud-computing concepts',
+          '4.2 Summarize aspects of client-side virtualization'
         ],
         'Domain 5: Hardware and Network Troubleshooting': [
-          '5.1 Given a scenario, use the best practice methodology to resolve problems',
+          '5.1 Given a scenario, apply the best practice methodology to resolve problems',
           '5.2 Given a scenario, troubleshoot problems related to motherboards, RAM, CPU, and power',
-          '5.3 Given a scenario, troubleshoot hard drives and RAID arrays',
+          '5.3 Given a scenario, troubleshoot and diagnose problems with storage drives and RAID arrays',
           '5.4 Given a scenario, troubleshoot video, projector, and display issues',
-          '5.5 Given a scenario, troubleshoot common mobile device issues',
-          '5.6 Given a scenario, troubleshoot printers',
-          '5.7 Given a scenario, troubleshoot common wired and wireless network problems'
+          '5.5 Given a scenario, troubleshoot common issues with mobile devices',
+          '5.6 Given a scenario, troubleshoot and resolve printer issues',
+          '5.7 Given a scenario, troubleshoot problems with wired and wireless networks'
         ]
       },
       'A+ 1102': {
         'Domain 1: Operating Systems': [
-          '1.1 Compare and contrast common operating system types and their purposes',
-          '1.2 Compare and contrast features of Microsoft Windows versions',
-          '1.3 Summarize general OS installation considerations and upgrade methods',
-          '1.4 Given a scenario, use appropriate Microsoft command-line tools',
-          '1.5 Given a scenario, use Microsoft operating system features and tools',
-          '1.6 Given a scenario, use Microsoft Windows Control Panel utilities',
-          '1.7 Given a scenario, configure Microsoft Windows networking',
-          '1.8 Given a scenario, configure client-side virtualization',
-          '1.9 Given a scenario, troubleshoot common OS issues',
-          '1.10 Given a scenario, resolve common mobile OS and application issues',
-          '1.11 Given a scenario, configure basic mobile device network connectivity'
+          '1.1 Identify basic features of Microsoft Windows editions',
+          '1.2 Given a scenario, use the appropriate Microsoft command-line tool',
+          '1.3 Given a scenario, use features and tools of the Microsoft Windows 10 operating system (OS)',
+          '1.4 Given a scenario, use the appropriate Microsoft Windows 10 Control Panel utility',
+          '1.5 Given a scenario, use the appropriate Windows settings',
+          '1.6 Given a scenario, configure Microsoft Windows networking features on a client/desktop',
+          '1.7 Given a scenario, apply application installation and configuration concepts',
+          '1.8 Explain common OS types and their purposes',
+          '1.9 Given a scenario, perform OS installations and upgrades in a diverse OS environment',
+          '1.10 Identify common features and tools of the macOS/desktop OS',
+          '1.11 Identify common features and tools of the Linux client/desktop OS'
         ],
         'Domain 2: Security': [
-          '2.1 Summarize the importance of physical security measures',
-          '2.2 Explain logical security concepts',
-          '2.3 Compare and contrast wireless security protocols and authentication methods',
-          '2.4 Given a scenario, detect, remove, and prevent malware',
-          '2.5 Given a scenario, implement security best practices',
-          '2.6 Given a scenario, implement appropriate data destruction and disposal methods',
-          '2.7 Given a scenario, configure security on SOHO wireless and wired networks',
-          '2.8 Given a scenario, use common safety procedures',
-          '2.9 Given a scenario, use appropriate data destruction methods',
-          '2.10 Given a scenario, configure security on client mobile devices'
+          '2.1 Summarize various security measures and their purposes',
+          '2.2 Compare and contrast wireless security protocols and authentication methods',
+          '2.3 Given a scenario, detect, remove, and prevent malware using the appropriate tools and methods',
+          '2.4 Explain common social-engineering attacks, threats, and vulnerabilities',
+          '2.5 Given a scenario, manage and configure basic security settings in the Microsoft Windows OS',
+          '2.6 Given a scenario, configure a workstation to meet best practices for security',
+          '2.7 Explain common methods for securing mobile and embedded devices',
+          '2.8 Given a scenario, use common data destruction and disposal methods',
+          '2.9 Given a scenario, configure appropriate security settings on small office/home office (SOHO) wireless and wired networks',
+          '2.10 Given a scenario, install and configure browsers and relevant security settings'
         ],
         'Domain 3: Software Troubleshooting': [
-          '3.1 Given a scenario, troubleshoot Microsoft Windows OS problems',
-          '3.2 Given a scenario, troubleshoot and resolve PC security issues',
+          '3.1 Given a scenario, troubleshoot common Windows OS problems',
+          '3.2 Given a scenario, troubleshoot common personal computer (PC) security issues',
           '3.3 Given a scenario, use best practice procedures for malware removal',
-          '3.4 Given a scenario, troubleshoot mobile OS and application issues',
-          '3.5 Given a scenario, troubleshoot mobile OS and application security issues'
+          '3.4 Given a scenario, troubleshoot common mobile OS and application issues',
+          '3.5 Given a scenario, troubleshoot common mobile OS and application security issues'
         ],
         'Domain 4: Operational Procedures': [
-          '4.1 Compare and contrast best practices associated with types of documentation',
-          '4.2 Given a scenario, implement basic change management best practices',
-          '4.3 Given a scenario, implement basic disaster prevention and recovery methods',
-          '4.4 Explain common safety procedures',
-          '4.5 Explain environmental impacts and appropriate controls',
+          '4.1 Given a scenario, implement best practices associated with documentation and support systems information management',
+          '4.2 Explain basic change-management best practices',
+          '4.3 Given a scenario, implement workstation backup and recovery methods',
+          '4.4 Given a scenario, use common safety procedures',
+          '4.5 Summarize environmental impacts and local environmental controls',
           '4.6 Explain the importance of prohibited content/activity and privacy, licensing, and policy concepts',
           '4.7 Given a scenario, use proper communication techniques and professionalism',
           '4.8 Identify the basics of scripting',
@@ -841,74 +841,79 @@ function Home() {
       },
       'Network+': {
         'Domain 1: Networking Concepts': [
-          '1.1 Explain the purposes and uses of ports and protocols',
-          '1.2 Explain devices, applications, protocols and services at their appropriate OSI layers',
-          '1.3 Explain the concepts and characteristics of routing and switching',
-          '1.4 Given a scenario, configure the appropriate IP addressing components',
-          '1.5 Compare and contrast the characteristics of network topologies, types and technologies',
-          '1.6 Given a scenario, implement the appropriate wireless technologies and configurations',
-          '1.7 Summarize cloud concepts and their purposes',
-          '1.8 Explain the functions of network services'
+          '1.1 Explain concepts related to the Open Systems Interconnection (OSI) reference model',
+          '1.2 Compare and contrast networking appliances, applications, and functions',
+          '1.3 Summarize cloud concepts and connectivity options',
+          '1.4 Explain common networking ports, protocols, services, and traffic types',
+          '1.5 Compare and contrast transmission media and transceivers',
+          '1.6 Compare and contrast network topologies, architectures, and types',
+          '1.7 Given a scenario, use appropriate IPv4 network addressing',
+          '1.8 Summarize evolving use cases for modern network environments'
         ],
-        'Domain 2: Network Implementations': [
-          '2.1 Given a scenario, deploy the appropriate cabling solution',
-          '2.2 Given a scenario, determine the appropriate placement of networking devices on a network and install/configure them',
-          '2.3 Given a scenario, configure and deploy common Ethernet switching features',
-          '2.4 Given a scenario, implement the appropriate wireless standards and technologies'
+        'Domain 2: Network Implementation': [
+          '2.1 Explain characteristics of routing technologies',
+          '2.2 Given a scenario, configure switching technologies and features',
+          '2.3 Given a scenario, select and configure wireless devices and technologies',
+          '2.4 Explain important factors of physical installations'
         ],
         'Domain 3: Network Operations': [
-          '3.1 Given a scenario, use appropriate documentation and diagrams to manage the network',
-          '3.2 Compare and contrast business continuity and disaster recovery concepts',
-          '3.3 Explain common scanning, monitoring and patching processes and summarize their expected outputs',
-          '3.4 Given a scenario, use remote access methods',
-          '3.5 Identify policies and best practices'
+          '3.1 Explain the purpose of organizational processes and procedures',
+          '3.2 Given a scenario, use network monitoring technologies',
+          '3.3 Explain disaster recovery (DR) concepts',
+          '3.4 Given a scenario, implement IPv4 and IPv6 network services',
+          '3.5 Compare and contrast network access and management methods'
         ],
         'Domain 4: Network Security': [
-          '4.1 Summarize the purposes of physical security devices',
-          '4.2 Explain authentication and access controls',
-          '4.3 Given a scenario, secure a basic wireless network'
+          '4.1 Explain the importance of basic network security concepts',
+          '4.2 Summarize various types of attacks and their impact to the network',
+          '4.3 Given a scenario, apply network security features, defense techniques, and solutions'
         ],
         'Domain 5: Network Troubleshooting': [
-          '5.1 Explain the network troubleshooting methodology',
-          '5.2 Given a scenario, troubleshoot common cable connectivity issues and select the appropriate tools',
-          '5.3 Given a scenario, use appropriate network software tools and commands',
-          '5.4 Given a scenario, troubleshoot common wireless connectivity issues',
-          '5.5 Given a scenario, troubleshoot general networking issues'
+          '5.1 Explain the troubleshooting methodology',
+          '5.2 Given a scenario, troubleshoot common cabling and physical interface issues',
+          '5.3 Given a scenario, troubleshoot common issues with network services',
+          '5.4 Given a scenario, troubleshoot common performance issues',
+          '5.5 Given a scenario, use the appropriate tool or protocol to solve networking issues'
         ]
       },
       'Security+': {
-        'Domain 1: Attacks, Threats, and Vulnerabilities': [
-          '1.1 Compare and contrast different types of social engineering techniques',
-          '1.2 Given a scenario, analyze potential indicators to determine the type of attack',
-          '1.3 Given a scenario, analyze potential indicators associated with application attacks',
-          '1.4 Given a scenario, analyze potential indicators associated with network attacks'
+        'Domain 1: General Security Concepts': [
+          '1.1 Compare and contrast various types of security controls',
+          '1.2 Summarize fundamental security concepts',
+          '1.3 Explain the importance of change management processes and the impact to security',
+          '1.4 Explain the importance of using appropriate cryptographic solutions'
         ],
-        'Domain 2: Architecture and Design': [
-          '2.1 Explain the importance of security concepts in an enterprise environment',
-          '2.2 Summarize virtualization and cloud computing concepts',
-          '2.3 Summarize secure application development and deployment concepts',
-          '2.4 Summarize authentication and authorization design concepts',
-          '2.5 Given a scenario, implement cybersecurity resilience'
+        'Domain 2: Threats, Vulnerabilities, and Mitigations': [
+          '2.1 Compare and contrast common threat actors and motivations',
+          '2.2 Explain common threat vectors and attack surfaces',
+          '2.3 Explain various types of vulnerabilities',
+          '2.4 Given a scenario, analyze indicators of malicious activity',
+          '2.5 Explain the purpose of mitigation techniques used to secure the enterprise'
         ],
-        'Domain 3: Implementation': [
-          '3.1 Given a scenario, implement secure protocols',
-          '3.2 Given a scenario, implement host or application security solutions',
-          '3.3 Given a scenario, implement secure network designs',
-          '3.4 Given a scenario, install and configure wireless security settings'
+        'Domain 3: Security Architecture': [
+          '3.1 Compare and contrast security implications of different architecture models',
+          '3.2 Given a scenario, apply security principles to secure enterprise infrastructure',
+          '3.3 Compare and contrast concepts and strategies to protect data',
+          '3.4 Explain the importance of resilience and recovery in security architecture'
         ],
-        'Domain 4: Operations and Incident Response': [
-          '4.1 Given a scenario, use the appropriate tool to assess organizational security',
-          '4.2 Summarize the importance of policies, processes, and procedures for incident response',
-          '4.3 Given an incident, utilize appropriate data sources to support an investigation',
-          '4.4 Given an incident, apply mitigation techniques or controls to secure an environment',
-          '4.5 Explain the key aspects of digital forensics'
+        'Domain 4: Security Operations': [
+          '4.1 Given a scenario, apply common security techniques to computing resources',
+          '4.2 Explain the security implications of proper hardware, software, and data asset management',
+          '4.3 Explain various activities associated with vulnerability management',
+          '4.4 Explain security alerting and monitoring concepts and tools',
+          '4.5 Given a scenario, modify enterprise capabilities to enhance security',
+          '4.6 Given a scenario, implement and maintain identity and access management',
+          '4.7 Explain the importance of automation and orchestration related to secure operations',
+          '4.8 Explain appropriate incident response activities',
+          '4.9 Given a scenario, use data sources to support an investigation'
         ],
-        'Domain 5: Governance, Risk, and Compliance': [
-          '5.1 Compare and contrast various types of controls',
-          '5.2 Explain the importance of applicable regulations, standards, or frameworks that impact organizational security posture',
-          '5.3 Explain the importance of policies to organizational security',
-          '5.4 Summarize risk management processes and concepts',
-          '5.5 Explain privacy and sensitive data concepts'
+        'Domain 5: Security Program Management and Oversight': [
+          '5.1 Summarize elements of effective security governance',
+          '5.2 Explain elements of the risk management process',
+          '5.3 Explain the processes associated with third-party risk assessment and management',
+          '5.4 Summarize elements of effective security compliance',
+          '5.5 Explain types and purposes of audits and assessments',
+          '5.6 Given a scenario, implement security awareness practices'
         ]
       }
     };
