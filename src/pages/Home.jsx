@@ -37,6 +37,7 @@ function Home() {
   const [resourceContent, setResourceContent] = useState(null);
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
   const [selectedNoteContent, setSelectedNoteContent] = useState(null);
+  const [showMobileNotes, setShowMobileNotes] = useState(false);
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -190,17 +191,19 @@ function Home() {
     const newDomain = e.target.value;
     setSelectedDomain(newDomain);
     
-    try {
-      // Update the exam code here as well
-      const examCode = selectedExam.replace('Security+', 'Sec').replace(/\s+/g, '');
-      const formattedDomain = newDomain.replace('.', '_');
-      
-      // Dynamically import the domain content
-      const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
-      setDomainContent(domainFile.default);
-    } catch (error) {
-      console.error('Failed to load domain content:', error);
-      setDomainContent(null);
+    // Only attempt to load domain content if we're in the notes section
+    // and resourceContent exists (meaning we're viewing notes)
+    if (resourceContent && !isPortsMode && !isCommandsMode && !isNetCommandsMode) {
+      try {
+        const examCode = selectedExam.replace('Security+', 'Sec').replace(/\s+/g, '');
+        const formattedDomain = newDomain.replace('.', '_');
+        
+        const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
+        setDomainContent(domainFile.default);
+      } catch (error) {
+        console.error('Failed to load domain content:', error);
+        setDomainContent(null);
+      }
     }
   };
 
@@ -286,7 +289,7 @@ function Home() {
     }
   };
 
-  const generatePortsQuestion = async () => {
+  const handlePortsMode = async () => {
     if (isMobile) {
       setIsQuestionModalOpen(true);
     }
@@ -340,7 +343,7 @@ function Home() {
     }
   };
 
-  const generateCommandQuestion = async () => {
+  const handleCommandsMode = async () => {
     if (isMobile) {
       setIsQuestionModalOpen(true);
     }
@@ -394,7 +397,7 @@ function Home() {
     }
   };
 
-  const generateNetCommandQuestion = async () => {
+  const handleNetCommandsMode = async () => {
     if (isMobile) {
       setIsQuestionModalOpen(true);
     }
@@ -448,7 +451,19 @@ function Home() {
     }
   };
 
-  const QuestionDisplay = ({ questions, resourceContent }) => {
+  const generateCommandQuestion = async () => {
+    if (isCommandsMode) {
+      await handleCommandsMode();
+    } else if (isNetCommandsMode) {
+      await handleNetCommandsMode();
+    } else if (isPortsMode) {
+      await handlePortsMode();
+    } else {
+      await generateSingleQuestion();
+    }
+  };
+
+  const QuestionDisplay = ({ questions, resourceContent, generateCommandQuestion }) => {
     if (resourceContent) {
       return (
         <div style={{
@@ -1310,7 +1325,7 @@ function Home() {
             </select>
 
             <button
-              onClick={generatePortsQuestion}
+              onClick={handlePortsMode}
               disabled={loading}
               style={{
                 width: isMobile ? '95%' : '100%',
@@ -1354,7 +1369,7 @@ function Home() {
             </select>
             
             <button
-              onClick={generateCommandQuestion}
+              onClick={handleCommandsMode}
               disabled={loading}
               style={{
                 width: isMobile ? '95%' : '100%',
@@ -1398,7 +1413,7 @@ function Home() {
             </select>
             
             <button
-              onClick={generateNetCommandQuestion}
+              onClick={handleNetCommandsMode}
               disabled={loading}
               style={{
                 width: isMobile ? '95%' : '100%',
@@ -1453,7 +1468,7 @@ function Home() {
                     <LoadingSpinner isDarkMode={isDarkMode} />
                   ) : questions ? (
                     <article className="question-display">
-                      <QuestionDisplay questions={questions} />
+                      <QuestionDisplay questions={questions} generateCommandQuestion={generateCommandQuestion} />
                       {questions && questions[0]?.type !== 'about' && <AIChatSection 
                         currentQuestion={questions[0]} 
                         selectedAnswer={selectedAnswer}
@@ -1504,6 +1519,7 @@ function Home() {
                 <QuestionDisplay 
                   questions={questions} 
                   resourceContent={resourceContent}
+                  generateCommandQuestion={generateCommandQuestion}
                 />
                 {questions && questions[0]?.type !== 'about' && <AIChatSection 
                   currentQuestion={questions[0]} 
@@ -1522,12 +1538,13 @@ function Home() {
           borderTop: window.innerWidth <= 768 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
           overflow: 'hidden',
           padding: isSidebarCollapsed ? '1rem 0' : '1rem',
-          position: 'fixed',
+          position: window.innerWidth <= 768 ? 'relative' : 'fixed', // Change to relative on mobile
           right: 0,
           top: '64px',
           bottom: 0,
           transition: 'width 0.3s ease',
-          display: window.innerWidth <= 768 ? 'none' : 'block',
+          // Remove or modify this line to show on mobile
+          display: 'block',
         }}>
           {/* Add the clip button */}
           {!window.innerWidth <= 768 && (
