@@ -98,8 +98,12 @@ function Home() {
     setSelectedDomain(newDomain);
     
     try {
+      // Update the exam code here as well
+      const examCode = selectedExam.replace('Security+', 'Sec').replace(/\s+/g, '');
+      const formattedDomain = newDomain.replace('.', '_');
+      
       // Dynamically import the domain content
-      const domainFile = await import(`../data/${selectedExam}/${newDomain.replace('.', '_')}.json`);
+      const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
       setDomainContent(domainFile.default);
     } catch (error) {
       console.error('Failed to load domain content:', error);
@@ -741,11 +745,16 @@ function Home() {
 
     const handleDomainItemClick = async (exam, domain) => {
       try {
-        const examCode = exam.replace('+ ', '').replace(' ', '');
+        // Handle different exam codes
+        let examCode = exam
+          .replace('Security+', 'Sec')
+          .replace('A+', 'A')  // Remove the + from A+
+          .replace(/\s+/g, '');
+        
         const formattedDomain = domain.split(' ')[0].replace('.', '_');
         
         const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
-        setQuestions(null); // Clear any existing questions
+        setQuestions(null);
         onContentSelect(domainFile.default);
       } catch (error) {
         console.error('Failed to load domain content:', error);
