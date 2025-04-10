@@ -110,6 +110,8 @@ function Home() {
   const generateSingleQuestion = async () => {
     try {
       setLoading(true);
+      setDomainContent(null);
+      setResourceContent(null); // Clear resource content
       const params = {
         exam: selectedExam,
         domain: selectedDomain,
@@ -146,6 +148,8 @@ function Home() {
   const handlePracticeExamGenerate = async () => {
     try {
       setLoading(true);
+      setDomainContent(null);
+      setResourceContent(null); // Clear resource content
       // Clear exam results when starting new practice exam
       navigate('/', { state: { examResults: null } });
       
@@ -187,6 +191,8 @@ function Home() {
     }
     try {
       setLoading(true);
+      setDomainContent(null);
+      setResourceContent(null); // Clear resource content
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
       setIsPortsMode(true);
@@ -239,6 +245,8 @@ function Home() {
     }
     try {
       setLoading(true);
+      setDomainContent(null);
+      setResourceContent(null); // Clear resource content
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
       setIsCommandsMode(true);
@@ -291,6 +299,8 @@ function Home() {
     }
     try {
       setLoading(true);
+      setDomainContent(null);
+      setResourceContent(null); // Clear resource content
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
       setIsNetCommandsMode(true);
@@ -735,6 +745,7 @@ function Home() {
         const formattedDomain = domain.split(' ')[0].replace('.', '_');
         
         const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
+        setQuestions(null); // Clear any existing questions
         onContentSelect(domainFile.default);
       } catch (error) {
         console.error('Failed to load domain content:', error);
