@@ -35,6 +35,8 @@ function Home() {
   const [isNetCommandsMode, setIsNetCommandsMode] = useState(false);
   const [domainContent, setDomainContent] = useState(null);
   const [resourceContent, setResourceContent] = useState(null);
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
+  const [selectedNoteContent, setSelectedNoteContent] = useState(null);
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -232,9 +234,13 @@ function Home() {
       console.log('Received data:', data);  // Add this for debugging
       setQuestions(data);
       
+      // Open question modal for mobile
+      if (isMobile) {
+        setIsQuestionModalOpen(true);
+      }
     } catch (error) {
-      console.error('Full error details:', error);
-      alert('Failed to fetch question');
+      console.error('Error generating question:', error);
+      alert('Failed to generate question');
     } finally {
       setLoading(false);
     }
@@ -815,7 +821,7 @@ function Home() {
     );
   };
 
-  const ResourceAccordion = ({ isDarkMode, onContentSelect }) => {
+  const ResourceAccordion = ({ isDarkMode, onContentSelect, isMobile }) => {
     const [openSections, setOpenSections] = useState({});
     const [openDomains, setOpenDomains] = useState({});
 
