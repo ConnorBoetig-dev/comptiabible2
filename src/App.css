@@ -308,3 +308,39 @@ aside {
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* Add or update these styles */
+.sidebar {
+  height: calc(100vh - 60px); /* Adjust 60px based on your header height */
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  position: fixed;
+  top: 60px; /* Should match the height subtracted above */
+  left: 0;
+  bottom: 0;
+  -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+}
+
+/* Ensure the scrollbar looks good */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 4px;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    top: 0;
+    height: auto;
+    max-height: none;
+  }
+}

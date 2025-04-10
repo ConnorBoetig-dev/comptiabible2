@@ -839,10 +839,12 @@ function Home() {
         // Handle different exam codes
         let examCode = exam
           .replace('Security+', 'Sec')
-          .replace('A+', 'A')  // Remove the + from A+
+          .replace('Network+', 'Net')  // Change Network+ to Net
+          .replace('A+', 'A')
           .replace(/\s+/g, '');
         
         const formattedDomain = domain.split(' ')[0].replace('.', '_');
+        console.log(`Attempting to load: ../data/${examCode}/${formattedDomain}.json`); // Debug log
         
         const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
         setQuestions(null);
@@ -1156,17 +1158,15 @@ function Home() {
         overflowX: 'hidden',
         height: window.innerWidth <= 768 ? 'auto' : '100%',
       }}>
-        <aside style={{
-          width: window.innerWidth <= 768 ? '100%' : '250px',
-          height: window.innerWidth <= 768 ? 'auto' : '100%',
-          backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
-          borderRight: window.innerWidth <= 768 ? 'none' : `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-          overflow: window.innerWidth <= 768 ? 'visible' : 'auto',
-          padding: isMobile ? '0.5rem' : '1rem',
-          position: window.innerWidth <= 768 ? 'relative' : 'static',
-          paddingBottom: '100px', // Add extra padding
-          minHeight: '100vh', // Ensure minimum height
-        }}>
+        <aside 
+          className="sidebar"
+          style={{
+            width: isSidebarCollapsed ? '50px' : (isMobile ? '100%' : '250px'),
+            backgroundColor: isDarkMode ? '#2d2d2d' : '#f8f9fa',
+            padding: isSidebarCollapsed ? '1rem 0.5rem' : '1rem',
+            borderRight: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+          }}
+        >
           <section className="question-generator">
             <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Single Question Generator</h2>
             <div style={{ marginBottom: '0.75rem' }}>
