@@ -1,0 +1,15 @@
+.domain-content {
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+  margin-bottom: 1rem;
+}
+
+.domain-content h3 {
+  margin-top: 0;
+  color: var(--text-primary);
+}
+
+.domain-content article {
+  color: var(--text-secondary);
+}

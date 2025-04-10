@@ -33,6 +33,8 @@ function Home() {
   const NET_COMMANDS_API_URL = 'https://72btwlt62f.execute-api.us-east-2.amazonaws.com/prod';
   const [selectedNetCommandQuestionType, setSelectedNetCommandQuestionType] = useState('scenario_based');
   const [isNetCommandsMode, setIsNetCommandsMode] = useState(false);
+  const [domainContent, setDomainContent] = useState(null);
+  const [resourceContent, setResourceContent] = useState(null);
 
   const QUESTION_TYPE_LABELS = {
     'identify_protocol_from_number': 'Identify Protocol (from Port Number)',
@@ -91,8 +93,18 @@ function Home() {
     setSelectedDomain(domainOptions[newExam][0]); // Set first domain as default
   };
 
-  const handleDomainChange = (e) => {
-    setSelectedDomain(e.target.value);
+  const handleDomainChange = async (e) => {
+    const newDomain = e.target.value;
+    setSelectedDomain(newDomain);
+    
+    try {
+      // Dynamically import the domain content
+      const domainFile = await import(`../data/${selectedExam}/${newDomain.replace('.', '_')}.json`);
+      setDomainContent(domainFile.default);
+    } catch (error) {
+      console.error('Failed to load domain content:', error);
+      setDomainContent(null);
+    }
   };
 
   const generateSingleQuestion = async () => {
@@ -325,55 +337,30 @@ function Home() {
     }
   };
 
-  const QuestionDisplay = ({ questions }) => {
-    // Add at the beginning of the component
-    if (questions[0]?.type === 'about') {
+  const QuestionDisplay = ({ questions, resourceContent }) => {
+    if (resourceContent) {
       return (
         <div style={{
-          padding: '2rem',
-          maxWidth: '800px',
-          margin: '0 auto',
-          color: isDarkMode ? '#ffffff' : '#000000',
+          marginTop: '2rem',
+          padding: '1.5rem',
+          backgroundColor: isDarkMode ? '#2d2d2d' : '#fff',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          border: `1px solid ${isDarkMode ? '#404040' : '#eee'}`,
         }}>
-          <h1 style={{ 
-            fontSize: '2rem', 
-            marginBottom: '1.5rem',
+          <h2 style={{ 
             color: isDarkMode ? '#ffffff' : '#000000',
+            marginBottom: '1.5rem'
           }}>
-            About TheCompTIABible
-          </h1>
-          <div style={{
-            whiteSpace: 'pre-line',
-            lineHeight: '1.6',
-            fontSize: '1.1rem',
-          }}>
-{`Welcome to TheCompTIABible - Your best free resource for the CompTIA Trifecta.
-
-This is a personal project, it is a free study tool designed to simply provide 
-practice questions to prepare for CompTIA certifications including A+, Network+, 
-and Security+.
-
-What makes it unique? I don't want anything from you. You won't see any subscription fees, 
-ads, or any form of monetization. It's purely for everyone to use, as this material should be free.
-
-Now if my AWS and OpenAI API charges go through the roof, scratch that. Maybe very minimal ads, but nothing constraining the user. 
-
-Features:
-• Practice questions from all exam domains
-• Interactive command-line study tools
-• Network ports and protocols training
-• Dark/Light mode for comfortable studying
-
-Coming Soon: 
-• Sign in/Daily Streaks
-• Community chat 
-
-LinkedIn: `}<a href="https://www.linkedin.com/in/connor-boetig-a23678290/" target="_blank" rel="noopener noreferrer" style={{color: '#007bff', textDecoration: 'underline', cursor: 'pointer'}}>Connor Boetig</a>{`
-Email: connorboetig20@gmail.com
-
-This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
-This is my first project implementing this many services, and I am far from even an entry level developer. 
-If you have any feedback, please reach out.`}</div>
+            {resourceContent.title}
+          </h2>
+          <div 
+            dangerouslySetInnerHTML={{ __html: resourceContent.content }}
+            style={{ 
+              color: isDarkMode ? '#cccccc' : '#666666',
+              lineHeight: '1.6'
+            }}
+          />
         </div>
       );
     }
@@ -723,22 +710,36 @@ If you have any feedback, please reach out.`}</div>
     );
   };
 
-  const ResourceAccordion = ({ isDarkMode }) => {
+  const ResourceAccordion = ({ isDarkMode, onContentSelect }) => {
     const [openSections, setOpenSections] = useState({});
     const [openDomains, setOpenDomains] = useState({});
 
-    const toggleSection = (section) => {
+    // Add back the toggle functions
+    const toggleSection = (exam) => {
       setOpenSections(prev => ({
         ...prev,
-        [section]: !prev[section]
+        [exam]: !prev[exam]
       }));
     };
 
-    const toggleDomain = (domain) => {
+    const toggleDomain = (domainKey) => {
       setOpenDomains(prev => ({
         ...prev,
-        [domain]: !prev[domain]
+        [domainKey]: !prev[domainKey]
       }));
+    };
+
+    const handleDomainItemClick = async (exam, domain) => {
+      try {
+        const examCode = exam.replace('+ ', '').replace(' ', '');
+        const formattedDomain = domain.split(' ')[0].replace('.', '_');
+        
+        const domainFile = await import(`../data/${examCode}/${formattedDomain}.json`);
+        onContentSelect(domainFile.default);
+      } catch (error) {
+        console.error('Failed to load domain content:', error);
+        onContentSelect(null);
+      }
     };
 
     const resources = {
@@ -964,11 +965,17 @@ If you have any feedback, please reach out.`}</div>
                     {subDomains.map((subDomain, index) => (
                       <div
                         key={index}
+                        onClick={() => handleDomainItemClick(exam, subDomain)}
                         style={{
                           padding: '8px 36px',
                           borderTop: index === 0 ? `1px solid ${isDarkMode ? '#404040' : '#ddd'}` : 'none',
-                          color: isDarkMode ? '#b3b3b3' : '#777777',
+                          color: isDarkMode ? '#66b2ff' : '#0066cc',
                           fontSize: '0.9em',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          '&:hover': {
+                            backgroundColor: isDarkMode ? '#333333' : '#f0f0f0'
+                          }
                         }}
                       >
                         {subDomain}
@@ -1391,7 +1398,7 @@ If you have any feedback, please reach out.`}</div>
               <LoadingSpinner isDarkMode={isDarkMode} />
             ) : examResults ? (
               <ExamReview examResults={examResults} isDarkMode={isDarkMode} />
-            ) : !questions ? (
+            ) : !questions && !resourceContent ? (
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -1403,7 +1410,10 @@ If you have any feedback, please reach out.`}</div>
               </div>
             ) : (
               <article className="question-display">
-                <QuestionDisplay questions={questions} />
+                <QuestionDisplay 
+                  questions={questions} 
+                  resourceContent={resourceContent}
+                />
                 {questions && questions[0]?.type !== 'about' && <AIChatSection 
                   currentQuestion={questions[0]} 
                   selectedAnswer={selectedAnswer}
@@ -1485,7 +1495,13 @@ If you have any feedback, please reach out.`}</div>
               paddingRight: '8px', // Add some padding for the scrollbar
               marginRight: '-8px', // Offset the padding to maintain alignment
             }}>
-              <ResourceAccordion isDarkMode={isDarkMode} />
+              <ResourceAccordion 
+                isDarkMode={isDarkMode} 
+                onContentSelect={(content) => {
+                  setResourceContent(content);
+                  setQuestions(null); // Clear any existing questions
+                }} 
+              />
             </div>
           </div>
         </aside>
