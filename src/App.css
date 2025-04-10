@@ -232,3 +232,79 @@
   --scrollbar-track: #f0f0f0;
   --scrollbar-thumb-hover: #777;
 }
+
+/* Add these styles to ensure proper container sizing */
+.sidebar-content {
+  max-height: calc(100vh - 60px); /* Adjust the 60px based on your header height */
+  overflow-y: auto;
+  padding-bottom: 20px; /* Add some padding at the bottom */
+}
+
+/* Ensure the scrollbar looks good */
+.sidebar-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 4px;
+}
+
+/* Add extra padding and min-height to ensure scrollability */
+.sidebar-content {
+  max-height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding-bottom: 100px; /* Increased padding to ensure scrollability */
+  margin-bottom: 50px; /* Add margin to create extra space */
+}
+
+/* Ensure the parent container allows for full scrolling */
+aside {
+  padding-bottom: 100px !important; /* Force extra padding */
+}
+
+/* Add smooth scrolling behavior */
+.sidebar-content {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure content is properly spaced */
+.domain-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+/* Fix the scrolling container */
+.sidebar-content {
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 120px;
+  position: relative;
+}
+
+/* Ensure nested sections don't get cut off */
+.domain-section {
+  position: relative;
+  width: 100%;
+}
+
+/* Make sure expanded sections have room to grow */
+.section-expanded {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* Ensure smooth mobile scrolling */
+@media (max-width: 768px) {
+  .sidebar-content {
+    height: auto;
+    min-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+  }
+}

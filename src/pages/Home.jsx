@@ -49,6 +49,97 @@ function Home() {
     'description_to_command': 'Description to Command'
   };
 
+  const clearAllStates = () => {
+    // Clear all question-related states
+    setQuestions(null);
+    setSelectedAnswer(null);
+    setIsAnswerChecked(false);
+    
+    // Clear all mode states
+    setIsPortsMode(false);
+    setIsCommandsMode(false);
+    setIsNetCommandsMode(false);
+    
+    // Clear chat-related states
+    setChatHistory([]);
+    setIsChatLoading(false);
+    
+    // Clear content states
+    setDomainContent(null);
+    setResourceContent(null);
+    
+    // Reset any selected options
+    setSelectedExam('A1101');
+    setSelectedDomain('1.1');
+    setSelectedQuestionType('identify_protocol_from_number');
+    setSelectedCommandQuestionType('scenario_based');
+    setSelectedNetCommandQuestionType('scenario_based');
+    
+    // Clear practice exam states
+    setPracticeExamQuestionCount('30');
+    
+    // Reset navigation state
+    navigate('/', { state: null }, { replace: true });
+  };
+
+  const handleAboutClick = () => {
+    // Clear states
+    setQuestions(null);
+    setSelectedAnswer(null);
+    setIsAnswerChecked(false);
+    setIsPortsMode(false);
+    setIsCommandsMode(false);
+    setIsNetCommandsMode(false);
+    setChatHistory([]);
+    setIsChatLoading(false);
+    
+    setResourceContent({
+      title: 'About TheCompTIABible',
+      content: `
+        <div style="line-height: 1.6; margin-bottom: 2rem;">
+          <p style="margin-bottom: 1.5rem;">
+            Welcome to TheCompTIABible - Your best free resource for the CompTIA Trifecta. This is a personal project, it is a free study tool designed to simply provide practice questions to prepare for CompTIA certifications including A+, Network+, and Security+.
+          </p>
+
+          <p style="margin-bottom: 1.5rem;">
+            Now if my AWS and OpenAI API charges go through the roof, scratch that. Maybe very minimal ads, but nothing constraining the user.
+          </p>
+
+          <h3 style="margin: 1.5rem 0 1rem 0;">Features:</h3>
+          <ul style="list-style-type: disc; margin-left: 2rem; margin-bottom: 1.5rem;">
+            <li>Practice questions from all exam domains</li>
+            <li>Interactive command-line study tools</li>
+            <li>Network ports and protocols training</li>
+            <li>Dark/Light mode for comfortable studying</li>
+          </ul>
+
+          <h3 style="margin: 1.5rem 0 1rem 0;">Coming Soon:</h3>
+          <ul style="list-style-type: disc; margin-left: 2rem; margin-bottom: 1.5rem;">
+            <li>Sign in/Daily Streaks</li>
+            <li>Community chat</li>
+          </ul>
+
+          <p style="margin-bottom: 1rem;">
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/connor-boetig-a23678290/" style="color: #007bff; text-decoration: underline; cursor: pointer;">Connor Boetig</a>
+          </p>
+          <p style="margin-bottom: 1.5rem;">
+            <strong>Email:</strong> connorboetig20@gmail.com
+          </p>
+
+          <p style="margin-bottom: 1.5rem;">
+            This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
+          </p>
+          
+          <p>
+            This is my first project implementing this many services, and I am far from even an entry level developer. If you have any feedback, please reach out.
+          </p>
+        </div>
+      `
+    });
+
+    navigate('/', { state: null });
+  };
+
   useEffect(() => {
     function handleResize() {
       setIsMobile(window.innerWidth <= 768);
@@ -983,9 +1074,10 @@ function Home() {
                   </div>
                   <div style={{
                     overflow: 'hidden',
-                    maxHeight: openDomains[`${exam}-${domain}`] ? '1000px' : '0',
+                    maxHeight: openDomains[`${exam}-${domain}`] ? '2000px' : '0',
                     transition: 'max-height 0.3s ease-in-out',
                     backgroundColor: isDarkMode ? '#262626' : '#f8f8f8',
+                    overflowY: 'auto'
                   }}>
                     {subDomains.map((subDomain, index) => (
                       <div
@@ -1039,41 +1131,7 @@ function Home() {
         <h1 style={{ margin: 0, fontSize: '1.2rem' }}>TheCompTIABible</h1>
         
         <button
-          onClick={() => setQuestions([{
-            type: 'about',
-            content: {
-              title: 'About TheCompTIABible',
-              description: `
-                Welcome to TheCompTIABible - Your best free resource for the CompTIA Trifecta.
-
-                This is a personal project, it is a free study tool designed to simply provide 
-                practice questions to prepare for CompTIA certifications including A+, Network+, 
-                and Security+.
-
-                What makes it unique? I don't want anything from you. You won't see any subscription fees, 
-                ads, or any form of monetization. It's purely for everyone to use, as this material should be free.
-
-                Now if my AWS and OpenAI API charges go through the roof, scratch that. Maybe very minimal ads, but nothing constraining the user. 
-
-                Features:
-                • Practice questions from all exam domains
-                • Interactive command-line study tools
-                • Network ports and protocols training
-                • Dark/Light mode for comfortable studying
-
-                Coming Soon: 
-                • Sign in/Daily Streaks
-                • Community chat 
-
-                LinkedIn: <a href="https://www.linkedin.com/in/connor-boetig-a23678290/" style="color: #007bff; text-decoration: underline; cursor: pointer;">Connor Boetig</a>
-                Email: connorboetig20@gmail.com
-                
-                This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
-                This is my first project implementing this many services, and I am far from even an entry level developer. 
-                If you have any feedback, please reach out.
-              `
-            }
-          }])}
+          onClick={handleAboutClick}
           style={{
             padding: '0.5rem 1rem',
             borderRadius: '4px',
@@ -1106,6 +1164,8 @@ function Home() {
           overflow: window.innerWidth <= 768 ? 'visible' : 'auto',
           padding: isMobile ? '0.5rem' : '1rem',
           position: window.innerWidth <= 768 ? 'relative' : 'static',
+          paddingBottom: '100px', // Add extra padding
+          minHeight: '100vh', // Ensure minimum height
         }}>
           <section className="question-generator">
             <h2 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>Single Question Generator</h2>
