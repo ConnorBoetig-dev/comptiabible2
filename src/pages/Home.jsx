@@ -101,11 +101,23 @@ function Home() {
       content: `
         <div style="line-height: 1.6; margin-bottom: 2rem;">
           <p style="margin-bottom: 1.5rem;">
-            Welcome to TheCompTIABible - Your best free resource for the CompTIA Trifecta. This is a personal project, it is a free study tool designed to simply provide practice questions to prepare for CompTIA certifications including A+, Network+, and Security+.
+            Welcome to TheCompTIABible - Your best free resource for the CompTIA Trifecta.
+          </p>
+
+          <p style="margin-bottom: 1.5rem;">
+            This is a personal project, it is a free study tool designed to simply provide practice questions to prepare for CompTIA certifications including A+, Network+, and Security+.
           </p>
 
           <p style="margin-bottom: 1.5rem;">
             Now if my AWS and OpenAI API charges go through the roof, scratch that. Maybe very minimal ads, but nothing constraining the user.
+          </p>
+
+          <p style="margin-bottom: 1.5rem;">
+            This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
+          </p>
+          
+          <p style="margin-bottom: 2rem;">
+            This is my first project implementing this many services, and I am far from even an entry level developer. If you have any feedback, please reach out.
           </p>
 
           <h3 style="margin: 1.5rem 0 1rem 0;">Features:</h3>
@@ -114,6 +126,7 @@ function Home() {
             <li>Interactive command-line study tools</li>
             <li>Network ports and protocols training</li>
             <li>Dark/Light mode for comfortable studying</li>
+            <li>Exam notes</li>
           </ul>
 
           <h3 style="margin: 1.5rem 0 1rem 0;">Coming Soon:</h3>
@@ -127,14 +140,6 @@ function Home() {
           </p>
           <p style="margin-bottom: 1.5rem;">
             <strong>Email:</strong> connorboetig20@gmail.com
-          </p>
-
-          <p style="margin-bottom: 1.5rem;">
-            This project was made in an effort to learn AWS, where I used DynamoDB, Lambda functions, API Gateway, CloudFront, Route 53, and S3 (The list goes on of random AWS services). Aside from that, React and OpenAI's GPT-3.5 API were definitely interesting to use for the first time.
-          </p>
-          
-          <p>
-            This is my first project implementing this many services, and I am far from even an entry level developer. If you have any feedback, please reach out.
           </p>
         </div>
       `
