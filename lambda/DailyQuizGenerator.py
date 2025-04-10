@@ -32,20 +32,6 @@ def get_random_questions_from_table(table_name, count):
     return random.sample(items, min(count, len(items)))
 
 def lambda_handler(event, context):
-    # Get the claims from the authorizer
-    claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
-    
-    # Verify the user is authenticated
-    if not claims:
-        return {
-            "statusCode": 401,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "https://thecomptiabible.com"
-            },
-            "body": json.dumps({"error": "Unauthorized"})
-        }
-
     headers = {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "https://thecomptiabible.com",
@@ -93,6 +79,7 @@ def lambda_handler(event, context):
             "headers": headers,
             "body": json.dumps({"error": str(e)})
         }
+
 
 
 
