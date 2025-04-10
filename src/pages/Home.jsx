@@ -120,7 +120,7 @@ function Home() {
           </ul>
 
           <p style="margin-bottom: 1rem;">
-            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/connor-boetig-a23678290/" style="color: #007bff; text-decoration: underline; cursor: pointer;">Connor Boetig</a>
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/connor-boetig-a23678290/" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline; cursor: pointer;">Connor Boetig</a>
           </p>
           <p style="margin-bottom: 1.5rem;">
             <strong>Email:</strong> connorboetig20@gmail.com
