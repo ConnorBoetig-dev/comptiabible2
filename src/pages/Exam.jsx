@@ -123,7 +123,16 @@ function Exam() {
           color: isDarkMode ? '#ffffff' : '#000000',
         }}>
           <div>Question {currentQuestionIndex + 1} of {questions.length}</div>
-          <div>Time Remaining: {timeRemaining || 'Not started'}</div>
+          <div 
+            onClick={() => navigate('/')} 
+            style={{
+              cursor: 'pointer',
+              color: isDarkMode ? '#0066cc' : '#007bff',
+              textDecoration: 'underline'
+            }}
+          >
+            Home
+          </div>
         </div>
 
         {/* Question */}
