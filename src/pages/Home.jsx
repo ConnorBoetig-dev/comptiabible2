@@ -1498,7 +1498,7 @@ function Home() {
               borderBottom: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
               flexShrink: 0, // Prevent header from shrinking
             }}>
-              Resources (coming soon)
+              Notes for Exams
             </h2>
             <div style={{ 
               flex: 1,
