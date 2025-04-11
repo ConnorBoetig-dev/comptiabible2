@@ -680,50 +680,39 @@ function Home() {
       setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
 
       try {
-        // Create context about the current question and answer
-        const questionContext = `Question: ${currentQuestion['question-text']}\n` +
-          `Options:\nA) ${currentQuestion['option-a']}\n` +
-          `B) ${currentQuestion['option-b']}\n` +
-          `C) ${currentQuestion['option-c']}\n` +
-          `D) ${currentQuestion['option-d']}\n` +
-          `User selected: ${selectedAnswer || 'No answer yet'}\n` +
-          `Correct answer: ${currentQuestion['correct answer']}\n`;
+        const requestBody = {
+          questionContext: {
+            question_text: currentQuestion['question-text'],
+            option_a: currentQuestion['option-a'],
+            option_b: currentQuestion['option-b'],
+            option_c: currentQuestion['option-c'],
+            option_d: currentQuestion['option-d'],
+            selected_answer: selectedAnswer || 'No answer yet',
+            correct_answer: currentQuestion['correct answer']
+          },
+          chatHistory: chatHistory,
+          userMessage: userMessage
+        };
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch(import.meta.env.VITE_CHAT_API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+            'x-api-key': import.meta.env.VITE_API_GATEWAY_KEY
           },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "system",
-                content: "You are a helpful AI tutor. Use the following question context to help the user understand the topic better: " + questionContext
-              },
-              ...chatHistory.map(msg => ({
-                role: msg.role,
-                content: msg.content
-              })),
-              {
-                role: "user",
-                content: userMessage
-              }
-            ],
-            temperature: 0.7,
-            max_tokens: 150
-          })
+          mode: 'cors',
+          body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
         setChatHistory(prev => [...prev, { 
           role: 'assistant', 
-          content: data.choices[0].message.content 
+          content: data.response 
         }]);
         scrollChatToBottom();
       } catch (error) {
