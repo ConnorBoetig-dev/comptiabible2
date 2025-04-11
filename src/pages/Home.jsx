@@ -457,6 +457,10 @@ function Home() {
   };
 
   const generateCommandQuestion = async () => {
+    // Reset answer states before generating new question
+    setSelectedAnswer(null);
+    setIsAnswerChecked(false);
+    
     if (isCommandsMode) {
       await handleCommandsMode();
     } else if (isNetCommandsMode) {
