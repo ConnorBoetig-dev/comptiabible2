@@ -99,7 +99,7 @@ function ExamReview({ examResults, isDarkMode }) {
           {questions.map((question, index) => {
             const userAnswer = answers[index];
             const correctAnswer = question['correct answer'];
-            const isCorrect = userAnswer === correctAnswer;
+            const isCorrect = userAnswer?.toUpperCase() === correctAnswer?.toUpperCase();
 
             return (
               <div key={index} style={{
@@ -136,20 +136,44 @@ function ExamReview({ examResults, isDarkMode }) {
                   const isUserAnswer = userAnswer === letter;
                   const isCorrectAnswer = correctAnswer === letter;
 
+                  // Determine background color based on answer status
+                  let backgroundColor = 'transparent';
+                  if (isCorrectAnswer) {
+                    // Always highlight correct answer in green
+                    backgroundColor = isDarkMode ? '#1b4332' : '#e8f5e9';
+                  } else if (isUserAnswer && !isCorrectAnswer) {
+                    // Highlight incorrect user answer in red
+                    backgroundColor = isDarkMode ? '#442c2c' : '#ffebee';
+                  }
+
                   return (
                     <div key={letter} style={{
                       padding: '0.5rem',
                       marginBottom: '0.5rem',
-                      backgroundColor: isUserAnswer
-                        ? isCorrect
-                          ? isDarkMode ? '#1b4332' : '#e8f5e9'
-                          : isDarkMode ? '#442c2c' : '#ffebee'
-                        : isCorrectAnswer
-                          ? isDarkMode ? '#1b4332' : '#e8f5e9'
-                          : 'transparent',
+                      backgroundColor,
                       borderRadius: '4px',
+                      border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                      color: isDarkMode ? '#ffffff' : '#000000',
                     }}>
                       {letter}) {question[optionKey]}
+                      {isCorrectAnswer && (
+                        <span style={{ 
+                          marginLeft: '8px', 
+                          color: isDarkMode ? '#4caf50' : '#2e7d32',
+                          fontWeight: 'bold' 
+                        }}>
+                          ✓ Correct Answer
+                        </span>
+                      )}
+                      {isUserAnswer && !isCorrectAnswer && (
+                        <span style={{ 
+                          marginLeft: '8px', 
+                          color: isDarkMode ? '#f44336' : '#c62828',
+                          fontWeight: 'bold' 
+                        }}>
+                          ✗ Your Answer
+                        </span>
+                      )}
                     </div>
                   );
                 })}
@@ -196,3 +220,5 @@ function ExamReview({ examResults, isDarkMode }) {
 }
 
 export default ExamReview;
+
+
