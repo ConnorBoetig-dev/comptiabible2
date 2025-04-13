@@ -11,6 +11,7 @@ function Home() {
   const location = useLocation();
   const examResults = location.state?.examResults;
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [questions, setQuestions] = useState(null);
   const [selectedExam, setSelectedExam] = useState('A1101');
   const [selectedDomain, setSelectedDomain] = useState('1.1');
@@ -21,18 +22,15 @@ function Home() {
   const [chatHistory, setChatHistory] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const API_BASE_URL = 'https://hgetzswjp8.execute-api.us-east-2.amazonaws.com/prod2';
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const [isPortsMode, setIsPortsMode] = useState(false);
-  const PORTS_API_URL = 'https://aa8ph8je38.execute-api.us-east-2.amazonaws.com/prod/questions';
   const [selectedQuestionType, setSelectedQuestionType] = useState('identify_protocol_from_number');
   const [isCommandsMode, setIsCommandsMode] = useState(false);
-  const COMMANDS_API_URL = 'https://lklcife942.execute-api.us-east-2.amazonaws.com/prod/CommandQuestions';
+  const [isNetCommandsMode, setIsNetCommandsMode] = useState(false);
   const [selectedCommandQuestionType, setSelectedCommandQuestionType] = useState('scenario_based');
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const NET_COMMANDS_API_URL = 'https://72btwlt62f.execute-api.us-east-2.amazonaws.com/prod';
   const [selectedNetCommandQuestionType, setSelectedNetCommandQuestionType] = useState('scenario_based');
-  const [isNetCommandsMode, setIsNetCommandsMode] = useState(false);
   const [domainContent, setDomainContent] = useState(null);
   const [resourceContent, setResourceContent] = useState(null);
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
@@ -61,7 +59,7 @@ function Home() {
     // Clear all mode states
     setIsPortsMode(false);
     setIsCommandsMode(false);
-    setIsNetCommandsMode(false);
+    setIsNetCommandsMode(false);  // Add this line
     
     // Clear chat-related states
     setChatHistory([]);
@@ -215,40 +213,49 @@ function Home() {
   const generateSingleQuestion = async () => {
     try {
       setLoading(true);
+      setError(null);
       setDomainContent(null);
-      setResourceContent(null); // Clear resource content
-      const params = {
+      setResourceContent(null);
+      
+      const apiKey = import.meta.env.VITE_API_KEY;
+      if (!apiKey) {
+        throw new Error('API key not found in environment variables');
+      }
+
+      const queryParams = new URLSearchParams({
         exam: selectedExam,
         domain: selectedDomain,
-        count: 1
-      };
-      const queryString = new URLSearchParams(params).toString();
-      
-      const response = await fetch(`${API_BASE_URL}?${queryString}`, {
-        method: 'GET',
+        count: '1'
+      });
+
+      const response = await fetch(`${API_BASE_URL}/generate-question?${queryParams}`, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'Origin': window.location.origin
         },
-        mode: 'cors',
-        credentials: 'omit'  // Must be omit when using "*" for CORS
+        credentials: 'omit'
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log('Received data:', data);  // Add this for debugging
-      setQuestions(data);
       
-      // Open question modal for mobile
-      if (isMobile) {
-        setIsQuestionModalOpen(true);
+      // Ensure data is in the correct format
+      if (!Array.isArray(data) || !data.length || !data[0]['question-text']) {
+        throw new Error('Invalid question data format received from server');
       }
+
+      setQuestions(data);
+      setSelectedAnswer(null);
+      setIsAnswerChecked(false);
     } catch (error) {
       console.error('Error generating question:', error);
-      alert('Failed to generate question');
+      setError(error.message);
+      setQuestions(null);
     } finally {
       setLoading(false);
     }
@@ -258,7 +265,7 @@ function Home() {
     try {
       setLoading(true);
       setDomainContent(null);
-      setResourceContent(null); // Clear resource content
+      setResourceContent(null);
       // Clear exam results when starting new practice exam
       navigate('/', { state: { examResults: null } });
       
@@ -266,14 +273,15 @@ function Home() {
         exam: selectedExam,
         count: practiceExamQuestionCount
       };
+      
       const queryString = new URLSearchParams(params).toString();
-      const response = await fetch(`${API_BASE_URL}?${queryString}`, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/generate-practice-exam?${queryString}`, {
+        method: 'POST',  // Changed to POST to match other endpoints
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY,  // Add API key
+          'Origin': window.location.origin
         },
-        mode: 'cors',
         credentials: 'omit'
       });
       
@@ -282,6 +290,11 @@ function Home() {
       }
       
       const data = await response.json();
+      
+      // Validate the response data
+      if (!Array.isArray(data) || !data.length) {
+        throw new Error('Invalid practice exam data received');
+      }
       
       // Navigate to exam page with questions
       navigate('/exam', { state: { questions: data } });
@@ -295,89 +308,65 @@ function Home() {
   };
 
   const handlePortsMode = async () => {
-    if (isMobile) {
-      setIsQuestionModalOpen(true);
-    }
     try {
       setLoading(true);
       setDomainContent(null);
-      setResourceContent(null); // Clear resource content
+      setResourceContent(null);
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
       setIsPortsMode(true);
-      navigate('/', { state: { examResults: null } });
-      setChatHistory([
-        {
-          role: 'assistant',
-          content: "Ask me any questions about ports and protocols!"
-        }
-      ]);
-
+      
       const queryParams = new URLSearchParams({
-        questionType: selectedQuestionType
-      }).toString();
+        questionType: selectedQuestionType,
+        count: '1'
+      });
 
-      const response = await fetch(`${PORTS_API_URL}?${queryParams}`, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/get-common-ports?${queryParams}`, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY,
+          'Origin': window.location.origin
         },
-        mode: 'cors',
+        credentials: 'include',  // Changed back to 'include' to match Allow-Credentials: true
+        mode: 'cors'
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('Ports API Response:', data);
-
-      if (!Array.isArray(data) || data.length === 0) {
-        throw new Error('No question returned from API');
-      }
-
-      setQuestions([data[0]]);
-
+      setQuestions(data);
     } catch (error) {
       console.error('Error fetching ports question:', error);
-      alert('Failed to fetch ports question');
-      setQuestions(null);
+      alert(`Failed to fetch ports question: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCommandsMode = async () => {
-    if (isMobile) {
-      setIsQuestionModalOpen(true);
-    }
     try {
       setLoading(true);
       setDomainContent(null);
-      setResourceContent(null); // Clear resource content
+      setResourceContent(null);
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
       setIsCommandsMode(true);
-      navigate('/', { state: { examResults: null } });
-      setChatHistory([
-        {
-          role: 'assistant',
-          content: "Ask me any questions about A+ 1102 commands!"
-        }
-      ]);
 
       const queryParams = new URLSearchParams({
-        type: selectedCommandQuestionType
-      }).toString();
+        type: selectedCommandQuestionType,
+        count: '1'
+      });
 
-      const response = await fetch(`${COMMANDS_API_URL}?${queryParams}`, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/get-a-commands?${queryParams}`, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
-        },
-        mode: 'cors',
+          'x-api-key': import.meta.env.VITE_API_KEY
+        }
       });
 
       if (!response.ok) {
@@ -385,53 +374,35 @@ function Home() {
       }
 
       const data = await response.json();
-      console.log('Commands API Response:', data);
-
-      if (!Array.isArray(data) || data.length === 0) {
-        throw new Error('No question returned from API');
-      }
-
       setQuestions([data[0]]);
-
     } catch (error) {
       console.error('Error fetching command question:', error);
       alert('Failed to fetch command question');
-      setQuestions(null);
     } finally {
       setLoading(false);
     }
   };
 
   const handleNetCommandsMode = async () => {
-    if (isMobile) {
-      setIsQuestionModalOpen(true);
-    }
     try {
       setLoading(true);
       setDomainContent(null);
-      setResourceContent(null); // Clear resource content
+      setResourceContent(null);
       setSelectedAnswer(null);
       setIsAnswerChecked(false);
       setIsNetCommandsMode(true);
-      navigate('/', { state: { examResults: null } });
-      setChatHistory([
-        {
-          role: 'assistant',
-          content: "Ask me any questions about Network+ commands!"
-        }
-      ]);
 
       const queryParams = new URLSearchParams({
-        'question-type': selectedNetCommandQuestionType
-      }).toString();
+        'question-type': selectedNetCommandQuestionType,
+        count: '1'
+      });
 
-      const response = await fetch(`${NET_COMMANDS_API_URL}?${queryParams}`, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/get-network-commands?${queryParams}`, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
-        },
-        mode: 'cors',
+          'x-api-key': import.meta.env.VITE_API_KEY
+        }
       });
 
       if (!response.ok) {
@@ -439,18 +410,10 @@ function Home() {
       }
 
       const data = await response.json();
-      console.log('Network Commands API Response:', data);
-
-      if (!Array.isArray(data) || data.length === 0) {
-        throw new Error('No question returned from API');
-      }
-
       setQuestions([data[0]]);
-
     } catch (error) {
       console.error('Error fetching network command question:', error);
       alert('Failed to fetch network command question');
-      setQuestions(null);
     } finally {
       setLoading(false);
     }
@@ -698,34 +661,27 @@ function Home() {
           userMessage: userMessage
         };
 
-        const response = await fetch(import.meta.env.VITE_CHAT_API_URL, {
+        const response = await fetch(`${API_BASE_URL}/context-gpt`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': import.meta.env.VITE_API_GATEWAY_KEY
+            'x-api-key': import.meta.env.VITE_API_KEY
           },
-          mode: 'cors',
           body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`API Error: ${response.status} - ${errorText}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        setChatHistory(prev => [...prev, { 
-          role: 'assistant', 
-          content: data.response 
-        }]);
-        scrollChatToBottom();
+        setChatHistory(prev => [...prev, { role: 'assistant', content: data.response }]);
       } catch (error) {
-        console.error('Chat error:', error);
+        console.error('Error in chat:', error);
         setChatHistory(prev => [...prev, { 
           role: 'assistant', 
-          content: `Error: ${error.message}. Please try again.` 
+          content: 'Sorry, I encountered an error processing your request.' 
         }]);
-        scrollChatToBottom();
       } finally {
         setIsChatLoading(false);
       }

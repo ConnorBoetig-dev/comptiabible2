@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import FlagQuestionModal from './FlagQuestionModal';
 
 function ExamReview({ examResults, isDarkMode }) {
   const [showQuestions, setShowQuestions] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
+  const [showFeedbackMessage, setShowFeedbackMessage] = useState(false);
   const navigate = useNavigate();
 
   if (!examResults) return null;
@@ -13,6 +17,23 @@ function ExamReview({ examResults, isDarkMode }) {
     navigate('/', { state: { examResults: null } });
   };
 
+  const handleFlagClick = (questionId) => {
+    setSelectedQuestionId(questionId);
+    setModalOpen(true);
+  };
+
+  const handleFlagSubmit = (feedback) => {
+    // Mock submission - just console log for now
+    console.log('Question flagged:', {
+      questionId: selectedQuestionId,
+      feedback
+    });
+    
+    setModalOpen(false);
+    setShowFeedbackMessage(true);
+    setTimeout(() => setShowFeedbackMessage(false), 3000);
+  };
+
   return (
     <div style={{
       width: '100%',
@@ -20,6 +41,21 @@ function ExamReview({ examResults, isDarkMode }) {
       margin: '0 auto',
       padding: '2rem',
     }}>
+      {showFeedbackMessage && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: '#4caf50',
+          color: 'white',
+          padding: '1rem',
+          borderRadius: '4px',
+          zIndex: 1000,
+        }}>
+          Thanks for your feedback!
+        </div>
+      )}
+      
       {!showQuestions ? (
         <div style={{
           display: 'flex',
@@ -187,6 +223,25 @@ function ExamReview({ examResults, isDarkMode }) {
                   <strong>Explanation:</strong><br/>
                   {question[`explanation-${correctAnswer.toLowerCase()}`]}
                 </div>
+
+                <button
+                  onClick={() => handleFlagClick(question.id || index)}
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#ffd700',
+                    color: '#000',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span>⚠️</span>
+                  Flag Question
+                </button>
               </div>
             );
           })}
@@ -215,10 +270,17 @@ function ExamReview({ examResults, isDarkMode }) {
           </div>
         </div>
       )}
+      <FlagQuestionModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleFlagSubmit}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 }
 
 export default ExamReview;
+
 
 
